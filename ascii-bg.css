@@ -1,0 +1,113 @@
+/* Full-screen ASCII Perlin background */
+#ascii-bg-root{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  display:block;
+}
+#ascii-bg-root canvas{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+/* Monospace grid styling */
+.ascii-char{font-family: monospace;}
+
+/* Utility class to force hiding the background inside a boxed area.
+   Add `ascii-hide` to any container that should NOT show the animated background.
+   It sets a stacking context and a solid background by default; override
+   `--box-bg` to match your site's panel color. */
+.ascii-hide{
+  position:relative;
+  z-index:2;
+  background: rgba(0, 0, 0, 0.96);
+}
+
+/* If your layout uses a wrapper with class `site-root`, raise it above the
+   background so normal content appears on top. */
+.site-root{position:relative; z-index:1}
+
+.ascii-wrapper {
+  position: relative;
+  display: block;
+  width: max-content;
+  margin: 0 auto;
+}
+
+.ascii-layer {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1;
+  white-space: pre;
+  margin: 0;
+}
+
+.layer-background {
+  color: #ffffff;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.layer-outline,
+.layer-foreground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.layer-outline {
+  color: #afafaf;
+}
+
+.layer-foreground {
+  color: #000000;
+}
+
+/* Character-level hover highlight inside boxed content, excluding buttons. */
+.ascii-hide .hover-char {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 1ch;
+  aspect-ratio: 1 / 1;
+  min-width: 1ch;
+  height: 1.1em;
+  line-height: 1;
+  white-space: pre;
+  font-family: inherit;
+  color: inherit;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.ascii-hide .hover-char.whitespace {
+  visibility: hidden;
+}
+
+.ascii-hide .hover-char:hover {
+  animation: ascii-flash 1200ms steps(1, start) infinite;
+  border: 1px solid rgba(140, 140, 140, 0.8);
+  border-radius: 0.2rem;
+}
+
+@keyframes ascii-flash {
+  0%, 40% {
+    background-color: rgba(128, 128, 128, 0.75);
+    color: #000000;
+  }
+  41%, 100% {
+    background-color: transparent;
+    color: inherit;
+  }
+}
+
+/* Make the area outside the main boxed panel transparent so the ASCII background shows through. */
+.bg-background,
+#release-info,
+#footer {
+  background-color: transparent !important;
+}

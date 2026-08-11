@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              border: 'hsl(var(--border))',
+              input: 'hsl(var(--input))',
+              ring: 'hsl(var(--ring))',
+              background: 'hsl(var(--background))',
+              foreground: 'hsl(var(--foreground))',
+              muted: 'hsl(var(--muted))',
+              primary: {
+                DEFAULT: 'hsl(var(--primary))',
+                foreground: 'hsl(var(--primary-foreground))',
+              },
+              accent: {
+                DEFAULT: 'hsl(var(--accent))',
+                foreground: 'hsl(var(--accent-foreground))',
+              },
+              destructive: {
+                DEFAULT: 'hsl(var(--destructive))',
+                foreground: 'hsl(var(--destructive-foreground))',
+              },
+              page: 'hsl(var(--page))',
+              panel: 'hsl(var(--panel))',
+              'logo-fill': 'hsl(var(--logo-fill))',
+            },
+            fontFamily: {
+              sans: ['system-ui', 'sans-serif'],
+              body: ["'VT323'", 'monospace'],
+              display: ["'Press Start 2P'", 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=VT323:wght@400&family=Press+Start+2P:wght@400&display=swap"
+    />
+    <link rel="stylesheet" href="./ascii-bg.css" />
+    <style>
+      :root {
+        --background: 0 0% 0%;
+        --foreground: 0 0% 81%;
+        --primary: 0 0% 82%;
+        --primary-foreground: 0 0% 0%;
+        --accent: 0 0% 60%;
+        --accent-foreground: 0 0% 0%;
+        --muted: 0 0% 54%;
+        --page: 0 0% 0%;
+        --panel: 0 0% 2%;
+        --logo-fill: 0 0% 82%;
+        --border: 0 0% 81%;
+        --input: 0 0% 81%;
+        --ring: 0 0% 82%;
+        --radius: 0px;
+        --font-body: 'VT323', monospace;
+        --font-display: 'Press Start 2P', monospace;
+      }
+      body {
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+      }
+      .menu-button {
+        position: relative;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--panel));
+        color: hsl(var(--foreground));
+        font-family: var(--font-body);
+        font-size: 1.05rem;
+        letter-spacing: 0.14em;
+        line-height: 1;
+        padding: 0.38rem 0.85rem 0.34rem;
+        min-width: 112px;
+        text-transform: uppercase;
+        transition: transform 80ms steps(2, end), box-shadow 80ms steps(2, end), background-color 120ms linear;
+        box-shadow: 0 2px 0 0 hsl(var(--foreground));
+        touch-action: manipulation;
+        user-select: none;
+      }
+      .menu-button:hover {
+        background: hsl(var(--background));
+      }
+      .menu-button:active,
+      .menu-button.is-pressed {
+        transform: translateY(2px);
+        box-shadow: 0 0 0 0 hsl(var(--foreground));
+      }
+      .ascii-particle {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 40;
+        pointer-events: none;
+        font-family: var(--font-body);
+        font-size: 1.5rem;
+        line-height: 1;
+        font-variant-ligatures: none;
+        color: hsl(var(--foreground));
+        text-shadow: 0 0 2px hsl(var(--foreground));
+        will-change: transform, opacity;
+      }
+      body {
+        background-color: hsl(var(--background));
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="site-root min-h-screen text-foreground flex flex-col justify-center py-6"
+    >
+      <section id="logo" class="w-full py-0">
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
+        >
+          <div class="relative w-[56%] aspect-[412/293]">
+            <div class="ascii-wrapper">
+              <pre class="ascii-layer layer-background">
+
+
+                                              ██
+        ██████                               ███████
+        ███████████                         ████████
+            ██████████                     █████████
+   ████████      ████████               █████████████
+   ████████████  ██████████            ████████████
+    █████████████████████████          █████████████
+      ███████████████████████         ███████████████
+      █████████████████████████      ██████████████████
+      ████████████████████████████  ███████████████████
+       ████████████████████████████    ████████████████
+       ███████████████████████████████ █████████████████
+       ███████████████████████████████████████████████████
+       ██████████ █████████████████████████    ████████████
+     ████████████  ██████████████████   ██     ███████████████
+    ██████████████ ████████████       █████    ███████████████
+      ███████████  █████████    ███████████    ██████████████
+        ███████    ███████     ████████████    ██████████
+          █                     ████████          █████
+</pre>
+              <pre class="ascii-layer layer-outline">
+                                             ████
+      █████████                            ██   █████
+     ██       ██████                      ██        ██
+     █             █████                 ██           ██
+  █████                ███            ████             █
+██                       ███         ██                █
+█                          ███       █                 ██
+██                            █     ██                  █
+ █                            ██   ██                 ██
+ ██                             ████                   ███
+  ███                             █                      ██
+    █                                                     █
+    █                                                     ██
+    ██                                                    ██
+   ███                                                      ███
+  ██                                                          ██
+  █                                         ██                 ███
+  █                                          █                   █
+  █                                          █                   █
+  ███                                        █                 ███
+    ███        ███           █               █              ████
+      ███   ████ ███      █████             █████         ███
+        █████      ████████   ████        ███   ███████████
+                                 ██████████
+</pre>
+              <pre class="ascii-layer layer-foreground">
+                                             ░░░░
+                                             ███
+       ███████░░░░░░                      ░░██  ████░░
+     ░██      █████                        ██       ██
+     ░░█           ████░░░             ░░░██░░      ███░
+░░██████████         ▓███              ████  ░      ███░
+░██        ██████        ██░░░       ░██           ▓▓██░
+░░█            ▓█          ███       ░█            ███▓▓
+ ░██ █      █ ▓█            ▓█       ██     ░██     ██░░
+   ███       ███            ▓███░░░░██  ░░░░ ██      ██
+   ░░█       █                 ███░██░░░    █▓▓█       ██░░
+    ░█       █      ████      ░░  ██       █████       ███░
+    ░██░░    █       ██▓███ ░░     ████   █            ███░░
+      █  ░░░░██       █▓▓▓▓██       ▓██        █       ███░░
+      █       ████     ██████         ▓█   ██████         ██
+  ░░███       █  █                    ▓█ ███████           ███
+   ██ █       █  ██                  ███  ██░ █              ▓█░░
+   █              █            ███████    ▓██░█              ▓███░
+   ███           ██         ████          ▓██░█             ▓████░
+  ░░░███       ████       █████           ▓██ █          ██████░░░
+       ███ ████   ███████████░██        █████ ████     █████
+      ░░░███░░░░ ░░░██████░░░ ░█████████████    ░█████████░░░
+                   ░      ░       ████████░░░   ░         ░
+                                  ░░░░░░░░░</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="release-info" class="bg-background py-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="ascii-hide with-cat border border-foreground font-body text-foreground text-base"
+            style="max-width: 680px; margin: 0 auto"
+          >
+            <!-- Menu buttons -->
+            <div class="border-b border-foreground px-2 py-2">
+              <div class="flex flex-wrap items-center justify-center gap-2">
+                <a href="#main" class="menu-button ascii-menu-btn">
+                  Main
+                </a>
+                <a href="#about" class="menu-button ascii-menu-btn">
+                  About Me
+                </a>
+                <a href="#portfolio" class="menu-button ascii-menu-btn">
+                  Portfolio
+                </a>
+                <a href="https://discordapp.com/users/1213277908999610378" target="_blank" rel="noopener" class="menu-button ascii-menu-btn">
+                  Contact
+                </a>
+              </div>
+            </div>
+            <div id="page-content">
+            <!-- Header row: P r o d u c t i o n S -->
+            <div
+              class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground"
+            >
+              L &nbsp; o &nbsp; r &nbsp; e &nbsp; m &nbsp; i &nbsp; p &nbsp; s &nbsp; u &nbsp; m
+            </div>
+            <!-- RELEASE INFORMATION banner -->
+            <div
+              class="border-b border-foreground flex items-center justify-between px-2 py-1"
+            >
+              <span class="text-foreground">: :</span>
+              <span class="text-foreground tracking-widest"
+                >&mdash;&nbsp; Lorem ipsum dolor sit amet, consectetur adipiscing elit, &nbsp;&mdash;</span
+              >
+              <span class="text-foreground">: :</span>
+            </div>
+            <!-- Proudly Presents -->
+            <div
+              class="border-b border-foreground text-center py-2 px-4 text-foreground"
+            >
+              ··Lorem ipsum dolor sit amet, consectetur adipiscing elit··
+            </div>
+            <!-- File Name -->
+            <div
+              class="border-b border-foreground flex items-center px-3 py-2 gap-2"
+            >
+              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
+              <span class="text-foreground flex-1">[ lorem ipsum</span>
+              <span class="text-foreground">]</span>
+            </div>
+            <!-- Title -->
+            <div
+              class="border-b border-foreground flex items-center px-3 py-2 gap-2"
+            >
+              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
+              <span class="text-foreground flex-1"
+                >[ lorem ipsum</span
+              >
+              <span class="text-foreground">]</span>
+            </div>
+            <!-- Released / Total Bytes -->
+            <div class="border-b border-foreground flex items-center px-3 py-2">
+              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
+              <span class="text-foreground">[ lorem ipsum</span>
+              <span class="text-foreground mx-2">]</span>
+              <span class="text-foreground flex-1 pl-4"
+                >lorem ipsum [ lorem ipsum</span
+              >
+              <span class="text-foreground">]</span>
+            </div>
+            <!-- Author(s) / Packaged By -->
+            <div class="border-b border-foreground flex items-center px-3 py-2">
+              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
+              <span class="text-foreground">[ lorem ipsum</span>
+              <span class="text-foreground mx-2">]</span>
+              <span class="text-foreground flex-1 pl-4"
+                >[lorem ipsum</span
+              >
+              <span class="text-foreground">]</span>
+            </div>
+            <!-- Description -->
+            <div class="border-b border-foreground flex px-3 py-2 gap-2">
+              <span class="text-foreground w-24 shrink-0 pt-0"
+                >lorem ipsum</span
+              >
+              <div class="flex-1 text-center text-foreground leading-relaxed">
+                <span>[</span>
+                <div class="px-2">
+                  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                  <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  </div>
+                  <div>Lorem ipsum.</div>
+                </div>
+                <span>]</span>
+              </div>
+            </div>
+            <!-- Notes -->
+            <div
+              class="border-b border-foreground flex items-center px-3 py-2 gap-2"
+            >
+              <span class="text-foreground w-24 shrink-0">lorem</span>
+              <span class="text-foreground flex-1">[</span>
+              <span class="text-foreground">]</span>
+            </div>
+            <!-- Graphics Support -->
+            <div
+              class="border-b border-foreground flex items-center px-3 py-2 gap-4 flex-wrap"
+            >
+              <span class="text-foreground">lorem ipsum</span>
+              <span class="text-foreground">[ ] lorem</span>
+              <span class="text-foreground">[ ] ipsum</span>
+              <span class="text-foreground"
+                >[<span class="text-foreground font-bold">■</span>] ipsum</span
+              >
+              <span class="text-foreground">[ ] lorem</span>
+            </div>
+            <!-- Additional releases -->
+            <div class="flex items-center px-3 py-2 text-foreground">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </div>
+          </div>
+        </div>
+      </div>
+      <template id="page-about">
+        <div>
+          <div class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground">ABOUT ME</div>
+          <div class="border-b border-foreground text-center py-2 px-4 text-foreground">··Who I Am··</div>
+          <div class="border-b border-foreground flex flex-col gap-2 px-3 py-4 text-foreground leading-relaxed">
+            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+            <div>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+          </div>
+        </div>
+      </template>
+      <template id="page-portfolio">
+        <div>
+          <div class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground">PORTFOLIO</div>
+          <div class="border-b border-foreground text-center py-2 px-4 text-foreground">··Projects and Work··</div>
+          <div class="border-b border-foreground flex flex-col gap-2 px-3 py-4 text-foreground leading-relaxed">
+            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+          </div>
+        </div>
+      </template>
+      </section>
+      <section id="footer" class="bg-background py-3">
+        <div class="max-w-7xl mx-auto px-4">
+          <div
+            class="flex items-center justify-center gap-0 font-body text-foreground text-base"
+          >
+            <span class="text-accent">·&thinsp;·</span>
+            <span
+              class="flex-1 border-t border-foreground/60 mx-2"
+              style="max-width: 60px"
+            ></span>
+            <span class="text-accent mx-1">—</span>
+            <span
+              class="flex-1 border-t border-foreground/60 mx-1"
+              style="max-width: 40px"
+            ></span>
+            <span class="px-3 tracking-wide text-foreground whitespace-nowrap"
+              >Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span
+            >
+            <span
+              class="flex-1 border-t border-foreground/60 mx-1"
+              style="max-width: 40px"
+            ></span>
+            <span class="text-accent mx-1">—</span>
+            <span
+              class="flex-1 border-t border-foreground/60 mx-2"
+              style="max-width: 60px"
+            ></span>
+            <span class="text-accent">·&thinsp;·</span>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      (() => {
+        const asciiFrames = ['@', 'a', '+', '~', '-', '·', ' '];
+        const buttons = document.querySelectorAll('.ascii-menu-btn');
+        const contentContainer = document.getElementById('page-content');
+        const initialContent = contentContainer ? contentContainer.innerHTML : '';
+        const templates = {
+          about: document.getElementById('page-about'),
+          portfolio: document.getElementById('page-portfolio'),
+        };
+
+        function setPage(page) {
+          if (!contentContainer) return;
+          if (page === 'main') {
+            contentContainer.innerHTML = initialContent;
+            window.wrapAsciiHoverText && window.wrapAsciiHoverText(contentContainer);
+            return;
+          }
+          const template = templates[page];
+          if (template) {
+            contentContainer.innerHTML = template.innerHTML;
+            window.wrapAsciiHoverText && window.wrapAsciiHoverText(contentContainer);
+            return;
+          }
+          contentContainer.innerHTML = initialContent;
+          window.wrapAsciiHoverText && window.wrapAsciiHoverText(contentContainer);
+        }
+
+        function loadPage(page) {
+          if (!page) page = 'main';
+          location.hash = page;
+        }
+
+        document.addEventListener('click', (event) => {
+          const link = event.target.closest('.ascii-menu-btn');
+          if (!link) return;
+          const href = link.getAttribute('href');
+          if (!href || link.target === '_blank' || href.startsWith('http')) return;
+          if (href.startsWith('#')) {
+            event.preventDefault();
+            loadPage(href.slice(1));
+          }
+        });
+
+        window.addEventListener('hashchange', () => {
+          const page = location.hash.slice(1) || 'main';
+          setPage(page);
+        });
+
+        if (location.hash) {
+          setPage(location.hash.slice(1));
+        }
+
+        const spawnAsciiParticle = (x, y, angle, speed) => {
+          const particle = document.createElement('span');
+          particle.className = 'ascii-particle';
+          particle.textContent = asciiFrames[0];
+          document.body.appendChild(particle);
+
+          const start = performance.now();
+          const duration = 500 + Math.random() * 180;
+          const vx = Math.cos(angle) * speed;
+          const vy = Math.sin(angle) * speed - 40;
+          const gravity = 240 + Math.random() * 80;
+
+          const animate = (now) => {
+            const elapsed = now - start;
+            const progress = Math.min(1, elapsed / duration);
+            const transparency_progress = Math.max(0, (1 -elapsed / duration)* -1 * (asciiFrames.length - 2) + 1);
+            const t = elapsed / 1000;
+
+            const px = x + vx * t;
+            const py = y + vy * t + 0.5 * gravity * t * t;
+            const frameIndex = Math.min(asciiFrames.length - 1, Math.floor(progress * (asciiFrames.length - 1)));
+
+            particle.textContent = asciiFrames[frameIndex];
+            particle.style.transform = `translate(${px}px, ${py}px)`;
+            particle.style.opacity = `${1 - transparency_progress}`;
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              particle.remove();
+            }
+          };
+
+          requestAnimationFrame(animate);
+        };
+
+        const burstFromButton = (button) => {
+          const rect = button.getBoundingClientRect();
+          const originX = rect.left + rect.width * (0.15 + Math.random() * 0.7);
+          const originY = rect.top + rect.height * 0.5;
+          const count = Math.max(10, Math.round(rect.width / 12));
+
+          const buttonCenterLinesX = rect.left + rect.width / 2;
+          const buttonCenterLinesY = rect.top + rect.height / 2;
+          
+          const expandedWidth = rect.width * 2;
+          const expandedHeight = rect.height * 2;
+
+          const minX = buttonCenterLinesX - expandedWidth / 2;
+          const minY = buttonCenterLinesY - expandedHeight / 2;
+
+          for (let i = 0; i < count; i += 1) {
+            const shiftedX = minX + Math.random() * expandedWidth;
+            const shiftedY = minY + Math.random() * expandedHeight;
+
+            const angle = (-Math.PI / 2) + ((Math.random() - 0.5) * 1.5);
+            const speed = Math.random() * 190;
+            
+            spawnAsciiParticle(shiftedX, shiftedY, angle, speed);
+          }
+        };
+
+        buttons.forEach((button) => {
+          button.addEventListener('pointerdown', () => {
+            button.classList.add('is-pressed');
+            burstFromButton(button);
+          });
+
+          const release = () => button.classList.remove('is-pressed');
+          button.addEventListener('pointerup', release);
+          button.addEventListener('pointerleave', release);
+          button.addEventListener('pointercancel', release);
+        });
+      })();
+    </script>
+    <script src="./ascii-bg.js" defer></script>
+  </body>
+</html>

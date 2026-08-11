@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              border: 'hsl(var(--border))',
+              input: 'hsl(var(--input))',
+              ring: 'hsl(var(--ring))',
+              background: 'hsl(var(--background))',
+              foreground: 'hsl(var(--foreground))',
+              muted: 'hsl(var(--muted))',
+              primary: {
+                DEFAULT: 'hsl(var(--primary))',
+                foreground: 'hsl(var(--primary-foreground))',
+              },
+              accent: {
+                DEFAULT: 'hsl(var(--accent))',
+                foreground: 'hsl(var(--accent-foreground))',
+              },
+            },
+            fontFamily: {
+              sans: ['system-ui', 'sans-serif'],
+              body: ["'VT323'", 'monospace'],
+              display: ["'Press Start 2P'", 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323:wght@400&family=Press+Start+2P:wght@400&display=swap" />
+    <link rel="stylesheet" href="./ascii-bg.css" />
+    <style>
+      :root {
+        --background: 0 0% 0%;
+        --foreground: 0 0% 81%;
+        --primary: 0 0% 82%;
+        --primary-foreground: 0 0% 0%;
+        --accent: 0 0% 60%;
+        --accent-foreground: 0 0% 0%;
+        --muted: 0 0% 54%;
+        --border: 0 0% 81%;
+        --input: 0 0% 81%;
+        --ring: 0 0% 82%;
+        --font-body: 'VT323', monospace;
+      }
+      body {
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+      }
+      .menu-button {
+        position: relative;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--panel));
+        color: hsl(var(--foreground));
+        font-family: var(--font-body);
+        font-size: 1.05rem;
+        letter-spacing: 0.14em;
+        line-height: 1;
+        padding: 0.38rem 0.85rem 0.34rem;
+        min-width: 112px;
+        text-transform: uppercase;
+        transition: transform 80ms steps(2, end), box-shadow 80ms steps(2, end), background-color 120ms linear;
+        box-shadow: 0 2px 0 0 hsl(var(--foreground));
+        text-decoration: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .menu-button:hover {
+        background: hsl(var(--background));
+      }
+    </style>
+  </head>
+  <body>
+    <div class="site-root min-h-screen text-foreground flex flex-col justify-center py-6">
+      <section class="w-full py-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+          <div class="relative w-[56%] aspect-[412/293]">
+            <div class="ascii-wrapper">
+              <pre class="ascii-layer layer-background">
+
+
+                                              ██
+        ██████                               ███████
+        ███████████                         ████████
+            ██████████                     █████████
+   ████████      ████████               █████████████
+   ████████████  ██████████            ████████████
+    █████████████████████████          █████████████
+      ███████████████████████         ███████████████
+      █████████████████████████      ██████████████████
+      ████████████████████████████  ███████████████████
+       ████████████████████████████    ████████████████
+       ███████████████████████████████ █████████████████
+       ███████████████████████████████████████████████████
+       ██████████ █████████████████████████    ████████████
+     ████████████  ██████████████████   ██     ███████████████
+    ██████████████ ████████████       █████    ███████████████
+      ███████████  █████████    ███████████    ██████████████
+        ███████    ███████     ████████████    ██████████
+          █                     ████████          █████
+</pre>
+              <pre class="ascii-layer layer-outline">
+                                             ████
+      █████████                            ██   █████
+     ██       ██████                      ██        ██
+     █             █████                 ██           ██
+  █████                ███            ████             █
+██                       ███         ██                █
+█                          ███       █                 ██
+██                            █     ██                  █
+ █                            ██   ██                 ██
+ ██                             ████                   ███
+  ███                             █                      ██
+    █                                                     █
+    █                                                     ██
+    ██                                                    ██
+   ███                                                      ███
+  ██                                                          ██
+  █                                         ██                 ███
+  █                                          █                   █
+  █                                          █                   █
+  ███                                        █                 ███
+    ███        ███           █               █              ████
+      ███   ████ ███      █████             █████         ███
+        █████      ████████   ████        ███   ███████████
+                                 ██████████
+</pre>
+              <pre class="ascii-layer layer-foreground">
+                                             ░░░░
+                                             ███
+       ███████░░░░░░                      ░░██  ████░░
+     ░██      █████                        ██       ██
+     ░░█           ████░░░             ░░░██░░      ███░
+░░██████████         ▓███              ████  ░      ███░
+░██        ██████        ██░░░       ░██           ▓▓██░
+░░█            ▓█          ███       ░█            ███▓▓
+ ░██ █      █ ▓█            ▓█       ██     ░██     ██░░
+   ███       ███            ▓███░░░░██  ░░░░ ██      ██
+   ░░█       █                 ███░██░░░    █▓▓█       ██░░
+    ░█       █      ████      ░░  ██       █████       ███░
+    ░██░░    █       ██▓███ ░░     ████   █            ███░░
+      █  ░░░░██       █▓▓▓▓██       ▓██        █       ███░░
+      █       ████     ██████         ▓█   ██████         ██
+  ░░███       █  █                    ▓█ ███████           ███
+   ██ █       █  ██                  ███  ██░ █              ▓█░░
+   █              █            ███████    ▓██░█              ▓███░
+   ███           ██         ████          ▓██░█             ▓████░
+  ░░░███       ████       █████           ▓██ █          ██████░░░
+       ███ ████   ███████████░██        █████ ████     █████
+      ░░░███░░░░ ░░░██████░░░ ░█████████████    ░█████████░░░
+                   ░      ░       ████████░░░   ░         ░
+                                  ░░░░░░░░░</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="bg-background py-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="ascii-hide with-cat border border-foreground font-body text-foreground text-base" style="max-width: 680px; margin: 0 auto">
+            <div class="decorative-cat">
+              <pre class="ascii-layer layer-background">
+
+
+                                              ██
+        ██████                               ███████
+        ███████████                         ████████
+            ██████████                     █████████
+   ████████      ████████               █████████████
+   ████████████  ██████████            ████████████
+    █████████████████████████          █████████████
+      ███████████████████████         ███████████████
+      █████████████████████████      ██████████████████
+      ████████████████████████████  ███████████████████
+       ████████████████████████████    ████████████████
+       ███████████████████████████████ █████████████████
+       ███████████████████████████████████████████████████
+       ██████████ █████████████████████████    ████████████
+     ████████████  ██████████████████   ██     ███████████████
+    ██████████████ ████████████       █████    ███████████████
+      ███████████  █████████    ███████████    ██████████████
+        ███████    ███████     ████████████    ██████████
+          █                     ████████          █████
+</pre>
+              <pre class="ascii-layer layer-outline">
+                                             ████
+      █████████                            ██   █████
+     ██       ██████                      ██        ██
+     █             █████                 ██           ██
+  █████                ███            ████             █
+██                       ███         ██                █
+█                          ███       █                 ██
+██                            █     ██                  █
+ █                            ██   ██                 ██
+ ██                             ████                   ███
+  ███                             █                      ██
+    █                                                     █
+    █                                                     ██
+    ██                                                    ██
+   ███                                                      ███
+  ██                                                          ██
+  █                                         ██                 ███
+  █                                          █                   █
+  █                                          █                   █
+  ███                                        █                 ███
+    ███        ███           █               █              ████
+      ███   ████ ███      █████             █████         ███
+        █████      ████████   ████        ███   ███████████
+                                 ██████████
+</pre>
+              <pre class="ascii-layer layer-foreground">
+                                             ░░░░
+                                             ███
+       ███████░░░░░░                      ░░██  ████░░
+     ░██      █████                        ██       ██
+     ░░█           ████░░░             ░░░██░░      ███░
+░░██████████         ▓███              █████  ░      ███░
+░██        ██████        ██░░░       ░██           ▓▓██░
+░░█            ▓█          ███       ░█            ███▓▓
+ ░██ █      █ ▓█            ▓█       ██     ░██     ██░░
+   ███       ███            ▓███░░░░██  ░░░░ ██      ██
+   ░░█       █                 ███░██░░░    █▓▓█       ██░░
+    ░█       █      ████      ░░  ██       █████       ███░
+    ░██░░    █       ██▓███ ░░     ████   █            ███░░
+      █  ░░░░██       █▓▓▓▓██       ▓██        █       ███░░
+      █       ████     ██████         ▓█   ██████         ██
+  ░░███       █  █                    ▓█ ███████           ███
+   ██ █       █  ██                  ███  ██░ █              ▓█░░
+   █              █            ███████    ▓██░█              ▓███░
+   ███           ██         ████          ▓██░█             ▓████░
+  ░░░███       ████       █████           ▓██ █          ██████░░░
+       ███ ████   ███████████░██        █████ ████     █████
+      ░░░███░░░░ ░░░██████░░░ ░█████████████    ░█████████░░░
+                   ░      ░       ████████░░░   ░         ░
+                                  ░░░░░░░░░</pre>
+            </div>
+            <div class="border-b border-foreground px-2 py-2">
+              <div class="flex flex-wrap items-center justify-center gap-2">
+                <a href="./index.html" class="menu-button">Main</a>
+                <a href="./about.html" class="menu-button">About Me</a>
+                <a href="./portfolio.html" class="menu-button">Portfolio</a>
+                <a href="https://discordapp.com/users/1213277908999610378" target="_blank" rel="noopener" class="menu-button">Contact</a>
+              </div>
+            </div>
+            <div class="decorative-cat">
+              <pre class="ascii-layer layer-background">
+
+
+                                              ██
+        ██████                               ███████
+        ███████████                         ████████
+            ██████████                     █████████
+   ████████      ████████               █████████████
+   ████████████  ██████████            ████████████
+    █████████████████████████          █████████████
+      ███████████████████████         ███████████████
+      █████████████████████████      ██████████████████
+      ████████████████████████████  ███████████████████
+       ████████████████████████████    ████████████████
+       ███████████████████████████████ █████████████████
+       ███████████████████████████████████████████████████
+       ██████████ █████████████████████████    ████████████
+     ████████████  ██████████████████   ██     ███████████████
+    ██████████████ ████████████       █████    ███████████████
+      ███████████  █████████    ███████████    ██████████████
+        ███████    ███████     ████████████    ██████████
+          █                     ████████          █████
+</pre>
+              <pre class="ascii-layer layer-outline">
+                                             ████
+      █████████                            ██   █████
+     ██       ██████                      ██        ██
+     █             █████                 ██           ██
+  █████                ███            ████             █
+██                       ███         ██                █
+█                          ███       █                 ██
+██                            █     ██                  █
+ █                            ██   ██                 ██
+ ██                             ████                   ███
+  ███                             █                      ██
+    █                                                     █
+    █                                                     ██
+    ██                                                    ██
+   ███                                                      ███
+  ██                                                          ██
+  █                                         ██                 ███
+  █                                          █                   █
+  █                                          █                   █
+  ███                                        █                 ███
+    ███        ███           █               █              ████
+      ███   ████ ███      █████             █████         ███
+        █████      ████████   ████        ███   ███████████
+                                 ██████████
+</pre>
+              <pre class="ascii-layer layer-foreground">
+                                             ░░░░
+                                             ███
+       ███████░░░░░░                      ░░██  ████░░
+     ░██      █████                        ██       ██
+     ░░█           ████░░░             ░░░██░░      ███░
+░░██████████         ▓███              ████  ░      ███░
+░██        ██████        ██░░░       ░██           ▓▓██░
+░░█            ▓█          ███       ░█            ███▓▓
+ ░██ █      █ ▓█            ▓█       ██     ░██     ██░░
+   ███       ███            ▓███░░░░██  ░░░░ ██      ██
+   ░░█       █                 ███░██░░░    █▓▓█       ██░░
+    ░█       █      ████      ░░  ██       █████       ███░
+    ░██░░    █       ██▓███ ░░     ████   █            ███░░
+      █  ░░░░██       █▓▓▓▓██       ▓██        █       ███░░
+      █       ████     ██████         ▓█   ██████         ██
+  ░░███       █  █                    ▓█ ███████           ███
+   ██ █       █  ██                  ███  ██░ █              ▓█░░
+   █              █            ███████    ▓██░█              ▓███░
+   ███           ██         ████          ▓██░█             ▓████░
+  ░░░███       ████       █████           ▓██ █          ██████░░░
+       ███ ████   ███████████░██        █████ ████     █████
+      ░░░███░░░░ ░░░██████░░░ ░█████████████    ░█████████░░░
+                   ░      ░       ████████░░░   ░         ░
+                                  ░░░░░░░░░</pre>
+            </div>
+            <div class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground">ABOUT ME</div>
+            <div class="border-b border-foreground text-center py-2 px-4 text-foreground">··Who I Am··</div>
+            <div class="border-b border-foreground flex flex-col gap-2 px-3 py-4 text-foreground leading-relaxed">
+              <div>I’m a web creator with a passion for retro-inspired digital design.</div>
+              <div>I love blending pixel-style visuals with modern web interactions.</div>
+              <div>This page is built with a live ASCII Perlin background effect.</div>
+              <div>Scroll around and click through to see more of my work.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script src="./ascii-bg.js" defer></script>
+  </body>
+</html>

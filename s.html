@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spaced Sliding Cat</title>
+  <style>
+    body {
+      background-color: #222;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      user-select: none;
+    }
+
+    .animation-container {
+      position: relative;
+      width: 350px; /* Made the box wider so the cat has room to move right */
+      height: 250px; 
+      cursor: pointer;
+    }
+
+    .divider-line {
+      position: absolute;
+      top: 100px; 
+      left: 0;
+      right: 0;
+      border-bottom: 2px solid #555;
+      z-index: 10;
+    }
+
+    .cat-pocket {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100px; 
+      overflow: hidden; 
+    }
+
+    .claws-pocket {
+      position: absolute;
+      top: 100px; 
+      left: 0;
+      right: 0;
+      height: 140px; 
+      overflow: hidden; 
+    }
+
+    .cat-body, .cat-claws {
+      position: absolute;
+      left: 0;
+      right: 0;
+      white-space: pre;
+      /* Removed text-align: center so you can manually push it with spaces from the left side */
+      text-align: left; 
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .cat-body {
+      bottom: 0; 
+    }
+
+    .cat-claws {
+      top: -12px; 
+    }
+
+    .scared .cat-body {
+      transform: translateY(110px);
+    }
+
+    .scared .cat-claws {
+      transform: translateY(-60px);
+    }
+    
+    .hint {
+      position: absolute;
+      bottom: 20px;
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="animation-container" id="catBox">
+    <div class="divider-line"></div>
+
+    <!-- Cat Pocket -->
+    <div class="cat-pocket">
+      <!-- You can add spaces directly here because of white-space: pre -->
+      <!-- I added 10 spaces to the front of every single line below -->
+      <div class="cat-body">          |\___/| 
+         =) o o (= 
+          \  ^  /
+           )=*=(</div>
+    </div>
+
+    <!-- Claws Pocket -->
+    <div class="claws-pocket">
+      <!-- Added the exact same 10 spaces here so they match perfectly -->
+      <div class="cat-claws">       __         __
+       "`         `"</div>
+    </div>
+  </div>
+
+  <div class="hint">Hover over the box to scare the cat!</div>
+
+  <script>
+    const catBox = document.getElementById('catBox');
+    let returnTimer = null;
+    let isScared = false;
+
+    catBox.addEventListener('mouseenter', () => {
+      if (isScared) return;
+
+      isScared = true;
+      catBox.classList.add('scared');
+      clearTimeout(returnTimer);
+
+      const randomWaitTime = Math.random() * (6000 - 2000) + 2000;
+
+      returnTimer = setTimeout(() => {
+        catBox.classList.remove('scared');
+        setTimeout(() => {
+          isScared = false;
+        }, 500);
+      }, randomWaitTime);
+    });
+  </script>
+
+</body>
+</html>
