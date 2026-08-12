@@ -53,20 +53,22 @@
   }
 
   function perlin2(x,y){
-    const X = Math.floor(x) & 255;
-    const Y = Math.floor(y) & 255;
-    const xf = x - Math.floor(x);
-    const yf = y - Math.floor(y);
-    const topRight = p[p[X+1]+Y+1];
-    const topLeft  = p[p[X]+Y+1];
-    const bottomRight = p[p[X+1]+Y];
-    const bottomLeft  = p[p[X]+Y];
+    const X = x | 0;
+    const Y = y | 0;
+    const xf = x - X;
+    const yf = y - Y;
+    const xi = X & 255;
+    const yi = Y & 255;
+    const bottomLeft = p[p[xi] + yi];
+    const bottomRight = p[p[xi + 1] + yi];
+    const topLeft = p[p[xi] + yi + 1];
+    const topRight = p[p[xi + 1] + yi + 1];
 
     const u = fade(xf);
     const v = fade(yf);
 
-    const x1 = lerp(u, grad(bottomLeft, xf, yf), grad(bottomRight, xf-1, yf));
-    const x2 = lerp(u, grad(topLeft, xf, yf-1), grad(topRight, xf-1, yf-1));
+    const x1 = lerp(u, grad(bottomLeft, xf, yf), grad(bottomRight, xf - 1, yf));
+    const x2 = lerp(u, grad(topLeft, xf, yf - 1), grad(topRight, xf - 1, yf - 1));
     return lerp(v, x1, x2) * 0.5; // roughly -1..1
   }
 
@@ -75,53 +77,182 @@
     root.id = 'ascii-bg-root';
     const canvas = document.createElement('canvas');
     canvas.id = 'ascii-bg-canvas';
+    canvas.style.display = 'block';
+    canvas.style.imageRendering = 'pixelated';
     root.appendChild(canvas);
     document.body.appendChild(root);
     return canvas;
   }
 
+  function compileShader(gl, type, source){
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)){
+      const info = gl.getShaderInfoLog(shader);
+      gl.deleteShader(shader);
+      throw new Error('Shader compile failed: ' + info);
+    }
+    return shader;
+  }
+
+  function createProgram(gl, vsSource, fsSource){
+    const program = gl.createProgram();
+    const vs = compileShader(gl, gl.VERTEX_SHADER, vsSource);
+    const fs = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if(!gl.getProgramParameter(program, gl.LINK_STATUS)){
+      const info = gl.getProgramInfoLog(program);
+      gl.deleteProgram(program);
+      throw new Error('Program link failed: ' + info);
+    }
+    return program;
+  }
+
+  function createCharAtlasTexture(gl, chars, cellSize){
+    const charCount = chars.length;
+    const atlas = document.createElement('canvas');
+    atlas.width = charCount * cellSize;
+    atlas.height = cellSize;
+    const ctx = atlas.getContext('2d');
+    ctx.fillStyle = 'transparent';
+    ctx.clearRect(0,0,atlas.width, atlas.height);
+    ctx.fillStyle = 'white';
+    ctx.font = cellSize + 'px monospace';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    for(let i=0;i<charCount;i++){
+      const x = i * cellSize + cellSize * 0.5;
+      const y = cellSize * 0.5;
+      ctx.fillText(chars[i], x, y);
+    }
+
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, atlas);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return texture;
+  }
+
   function start(){
     document.querySelectorAll('.ascii-hide').forEach(wrapAsciiHoverText);
     window.wrapAsciiHoverText = wrapAsciiHoverText;
-    const canvas = createCanvas();
-    const ctx = canvas.getContext('2d');
-    let dpr = Math.max(1, window.devicePixelRatio || 1);
 
+    const canvas = createCanvas();
+    const gl = canvas.getContext('webgl');
+    if(!gl){
+      console.warn('WebGL not available, falling back to 2D ASCII background');
+      return;
+    }
+
+    const vertexSource = `
+      attribute vec2 aPosition;
+      varying vec2 vUv;
+      void main(){
+        vUv = aPosition * 0.5 + 0.5;
+        gl_Position = vec4(aPosition, 0.0, 1.0);
+      }
+    `;
+
+    const fragmentSource = `
+      precision mediump float;
+      varying vec2 vUv;
+      uniform vec2 uResolution;
+      uniform float uTime;
+      uniform float uCellSize;
+      uniform float uCharCount;
+      uniform sampler2D uCharAtlas;
+
+      float fade(float t){ return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+      float grad(vec2 p, float h){
+        float angle = h * 6.28318530718;
+        vec2 g = vec2(cos(angle), sin(angle));
+        return dot(g, p);
+      }
+      float perlin(vec2 P){
+        vec2 i = floor(P);
+        vec2 f = fract(P);
+        float a = hash(i + vec2(0.0, 0.0));
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
+        float u = fade(f.x);
+        float v = fade(f.y);
+        float x1 = mix(grad(f, a), grad(f - vec2(1.0, 0.0), b), u);
+        float x2 = mix(grad(f - vec2(0.0, 1.0), c), grad(f - vec2(1.0, 1.0), d), u);
+        return mix(x1, x2, v) * 0.5 + 0.5;
+      }
+
+      void main(){
+        float step = uCellSize;
+        vec2 grid = floor(vUv * uResolution / step);
+        vec2 cellUv = fract(vUv * uResolution / step);
+        float noise = perlin(grid * 0.08 + vec2(uTime * 0.0008));
+        float idx = floor(noise * (uCharCount - 1.0) + 0.5);
+        vec2 atlasUv = vec2((idx + cellUv.x) / uCharCount, 1.0 - cellUv.y);
+        float charAlpha = texture2D(uCharAtlas, atlasUv).r;
+        gl_FragColor = vec4(vec3(charAlpha), charAlpha);
+      }
+    `;
+
+    const program = createProgram(gl, vertexSource, fragmentSource);
+    const positionLocation = gl.getAttribLocation(program, 'aPosition');
+    const resolutionLocation = gl.getUniformLocation(program, 'uResolution');
+    const timeLocation = gl.getUniformLocation(program, 'uTime');
+    const cellSizeLocation = gl.getUniformLocation(program, 'uCellSize');
+    const charCountLocation = gl.getUniformLocation(program, 'uCharCount');
+
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1, -1,
+      1, -1,
+      -1, 1,
+      -1, 1,
+      1, -1,
+      1, 1
+    ]), gl.STATIC_DRAW);
+
+    const atlasTexture = createCharAtlasTexture(gl, CHARS, cellSizeDefault * 2);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, atlasTexture);
+
+    let dpr = Math.max(1, window.devicePixelRatio || 1);
     function resize(){
       dpr = Math.max(1, window.devicePixelRatio || 1);
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
       canvas.style.width = window.innerWidth + 'px';
       canvas.style.height = window.innerHeight + 'px';
+      gl.viewport(0, 0, canvas.width, canvas.height);
     }
     window.addEventListener('resize', resize);
     resize();
 
     let time = 0;
-    const cellSize = cellSizeDefault * (dpr>1?1:1);
     function frame(){
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0,0,W,H);
-      ctx.fillStyle = 'rgba(220,220,220,0.6)';
-      ctx.textBaseline = 'top';
-      ctx.font = (cellSize * dpr) + 'px monospace';
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(program);
 
-      const cols = Math.floor(W / (cellSize * dpr));
-      const rows = Math.ceil(H / (cellSize * dpr));
+      gl.enableVertexAttribArray(positionLocation);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-      const scale = 0.08;
-      for(let y=0;y<rows;y++){
-        for(let x=0;x<cols;x++){
-          const nx = x*scale + time*0.0008;
-          const ny = y*scale + time*0.0008;
-          const n = perlin2(nx, ny);
-          const v = Math.max(0, Math.min(1, (n + 1) * 0.5));
-          const idx = Math.floor(v * (CHARS.length - 1));
-          const ch = CHARS[idx];
-          ctx.fillText(ch, x * (cellSize * dpr), y * (cellSize * dpr));
-        }
-      }
+      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+      gl.uniform1f(timeLocation, time);
+      gl.uniform1f(cellSizeLocation, cellSizeDefault * dpr);
+      gl.uniform1f(charCountLocation, CHARS.length);
+      gl.uniform1i(gl.getUniformLocation(program, 'uCharAtlas'), 0);
+
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
       time += 16;
       requestAnimationFrame(frame);
     }

@@ -124,6 +124,72 @@
       body {
         background-color: hsl(var(--background));
       }
+
+      .animation-container {
+        line-height: 1.2;
+        position: absolute;
+        top: -102px;
+        left: 0;
+        width: 350px; /* Made the box wider so the cat has room to move right */
+        height: 250px;
+        cursor: default;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .cat-pocket {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        overflow: hidden;
+      }
+
+      .claws-pocket {
+        position: absolute;
+        top: 100px;
+        left: 0;
+        right: 0;
+        height: 140px;
+        overflow: hidden;
+      }
+
+      .cat-body, .cat-claws, .cat-black {
+        position: absolute;
+        left: 0;
+        white-space: pre;
+        font-family: monospace;
+        text-align: left;
+        margin: 0;
+        transition: transform 0.5s ease-in-out;
+      }
+
+      .cat-body {
+        bottom: 0; 
+      }
+
+      .cat-black {
+        color: hsl(var(--background));
+        bottom: 0; 
+        text-shadow: 0 0 2px hsl(var(--background)), 0 0 4px hsl(var(--background));
+      }
+
+      .cat-claws {
+        top: -12px; 
+      }
+
+      .scared .cat-body {
+        transform: translateY(110px);
+      }
+
+      .scared .cat-black {
+        transform: translateY(110px);
+      }
+
+      .scared .cat-claws {
+        transform: translateY(-60px);
+      }
+      
     </style>
   </head>
   <body>
@@ -220,6 +286,66 @@
             class="ascii-hide with-cat border border-foreground font-body text-foreground text-base"
             style="max-width: 680px; margin: 0 auto"
           >
+            <div class="animation-container" id="catBox">
+    <!-- Cat Pocket -->
+    <div class="cat-pocket">
+      <pre class="cat-black">          ██   ██
+         ■███████■
+          ███████
+           █████</pre>
+      <pre class="cat-body">          |\___/|
+         =) o o (=
+          \  ^  /
+           )=*=(</pre>
+    </div>
+
+    <!-- Claws Pocket -->
+    <div class="claws-pocket">
+      <!-- Added the exact same 10 spaces here so they match perfectly -->
+      <pre class="cat-claws">        __       __
+        "`       `"</pre>
+    </div>
+  </div>
+
+  <script>
+    const catBox = document.getElementById('catBox');
+    let returnTimer = null;
+    let isScared = false;
+    let isInsideCatArea = false;
+
+    const scareCat = () => {
+      if (isScared) return;
+
+      isScared = true;
+      catBox.classList.add('scared');
+      clearTimeout(returnTimer);
+
+      const randomWaitTime = Math.random() * (6000 - 2000) + 2000;
+
+      returnTimer = setTimeout(() => {
+        catBox.classList.remove('scared');
+        setTimeout(() => {
+          isScared = false;
+        }, 500);
+      }, randomWaitTime);
+    };
+
+    window.addEventListener('mousemove', (event) => {
+      const rect = catBox.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (inside && !isInsideCatArea) {
+        isInsideCatArea = true;
+        scareCat();
+      } else if (!inside) {
+        isInsideCatArea = false;
+      }
+    });
+  </script>
             <!-- Menu buttons -->
             <div class="border-b border-foreground px-2 py-2">
               <div class="flex flex-wrap items-center justify-center gap-2">
