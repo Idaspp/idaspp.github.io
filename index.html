@@ -59,6 +59,7 @@
       href="https://fonts.googleapis.com/css2?family=VT323:wght@400&family=Press+Start+2P:wght@400&display=swap"
     />
     <link rel="stylesheet" href="./ascii-bg.css" />
+    <link rel="stylesheet" href="./media-player.css" />
     <style>
       :root {
         --background: 0 0% 0%;
@@ -130,8 +131,8 @@
         position: absolute;
         top: -102px;
         left: 0;
-        width: 350px; /* Made the box wider so the cat has room to move right */
-        height: 250px;
+        width: 175px; /* Made the box wider so the cat has room to move right */
+        height: 150px;
         cursor: default;
         z-index: 1;
         pointer-events: none;
@@ -189,7 +190,42 @@
       .scared .cat-claws {
         transform: translateY(-60px);
       }
-      
+
+      #ascii-cd-raster-container {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        z-index: 50;
+        pointer-events: none;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        letter-spacing: 0;
+        font-family: var(--font-body);
+        color: hsl(var(--foreground));
+        text-shadow: 0 0 1px rgba(0, 0, 0, 0.35);
+        white-space: pre;
+        line-height: 1;
+      }
+
+      #ascii-cd-raster {
+        margin: 0;
+        letter-spacing: 0;
+        font-size: 14px;
+        line-height: 1;
+        font-family: var(--font-body);
+      }
+
+      #ascii-cd-raster .ascii-cd-cell {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 1ch;
+        line-height: 1;
+        background: black;
+        color: hsl(var(--foreground));
+      }
     </style>
   </head>
   <body>
@@ -307,45 +343,9 @@
     </div>
   </div>
 
-  <script>
-    const catBox = document.getElementById('catBox');
-    let returnTimer = null;
-    let isScared = false;
-    let isInsideCatArea = false;
-
-    const scareCat = () => {
-      if (isScared) return;
-
-      isScared = true;
-      catBox.classList.add('scared');
-      clearTimeout(returnTimer);
-
-      const randomWaitTime = Math.random() * (6000 - 2000) + 2000;
-
-      returnTimer = setTimeout(() => {
-        catBox.classList.remove('scared');
-        setTimeout(() => {
-          isScared = false;
-        }, 500);
-      }, randomWaitTime);
-    };
-
-    window.addEventListener('mousemove', (event) => {
-      const rect = catBox.getBoundingClientRect();
-      const inside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-
-      if (inside && !isInsideCatArea) {
-        isInsideCatArea = true;
-        scareCat();
-      } else if (!inside) {
-        isInsideCatArea = false;
-      }
-    });
-  </script>
+  <script src="./cat-animation.js" defer></script>
+  <script src="./media-player.js" defer></script>
+  <script src="./cd-animation.js" defer></script>
             <!-- Menu buttons -->
             <div class="border-b border-foreground px-2 py-2">
               <div class="flex flex-wrap items-center justify-center gap-2">
