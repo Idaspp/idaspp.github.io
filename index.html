@@ -78,9 +78,16 @@
         --font-body: 'VT323', monospace;
         --font-display: 'Press Start 2P', monospace;
       }
+      html {
+        font-size: 30px;
+      }
       body {
         background-color: hsl(var(--background));
         color: hsl(var(--foreground));
+        font-size: 1rem;
+      }
+      .ascii-hide.with-cat {
+        font-size: 0.7rem;
       }
       .menu-button {
         position: relative;
@@ -88,7 +95,7 @@
         background: hsl(var(--panel));
         color: hsl(var(--foreground));
         font-family: var(--font-body);
-        font-size: 1.05rem;
+        font-size: 0.65rem;
         letter-spacing: 0.14em;
         line-height: 1;
         padding: 0.38rem 0.85rem 0.34rem;
@@ -114,7 +121,7 @@
         z-index: 40;
         pointer-events: none;
         font-family: var(--font-body);
-        font-size: 1.5rem;
+        font-size: 1rem;
         line-height: 1;
         font-variant-ligatures: none;
         color: hsl(var(--foreground));
@@ -124,13 +131,27 @@
       body {
         background-color: hsl(var(--background));
       }
+      #footer .font-body {
+        font-size: 0.7rem;
+      }
+      #page-content {
+        line-height: 1.2;
+      }
+      #page-content > div {
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+      }
+      #page-content .border-b {
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+      }
 
       .animation-container {
         line-height: 1.2;
         position: absolute;
         top: -102px;
         left: 0;
-        width: 175px; /* Made the box wider so the cat has room to move right */
+        width: 220px; /* Made the box wider so the cat has room to move right */
         height: 150px;
         cursor: default;
         z-index: 1;
@@ -188,6 +209,10 @@
 
       .scared .cat-claws {
         transform: translateY(-60px);
+      }
+
+      #release-info {
+        margin-top: 1.5rem;
       }
 
       #ascii-cd-raster-container {
@@ -268,9 +293,9 @@
   </head>
   <body>
     <div
-      class="site-root min-h-screen text-foreground flex flex-col justify-center py-6"
+      class="site-root min-h-screen text-foreground flex flex-col justify-center py-0"
     >
-      <section id="logo" class="w-full py-0">
+      <section id="logo" class="w-full pt-4 pb-0">
         <div
           class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center"
         >
@@ -540,7 +565,7 @@
         </div>
       </template>
       </section>
-      <section id="footer" class="bg-background py-3">
+      <section id="footer" class="bg-background py-0">
         <div class="max-w-7xl mx-auto px-4">
           <div
             class="flex items-center justify-center gap-0 font-body text-foreground text-base"
@@ -556,6 +581,7 @@
               style="max-width: 40px"
             ></span>
             <span class="px-3 tracking-wide text-foreground whitespace-nowrap"
+              style="font-size: 0.8rem;"
               >Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span
             >
             <span

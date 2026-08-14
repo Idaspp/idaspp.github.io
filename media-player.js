@@ -152,6 +152,15 @@
   let currentSong = "";
   let onPlayStateChangeCallback = null;
 
+  function pickNextSong() {
+    if (livePlaylist.length === 0) return "";
+
+    const eligibleSongs = livePlaylist.filter(song => song !== currentSong);
+    const candidatePool = eligibleSongs.length > 0 ? eligibleSongs : livePlaylist;
+    const randomIndex = Math.floor(Math.random() * candidatePool.length);
+    return candidatePool[randomIndex];
+  }
+
   // Update progress bar display
   function updateASCIIProgressBar(percentage) {
     const dotPosition = Math.round(percentage * BAR_TOTAL_STEPS);
@@ -191,8 +200,8 @@
         throw new Error("No MP3 files found.");
       }
 
-      const randomIndex = Math.floor(Math.random() * livePlaylist.length);
-      currentSong = livePlaylist[randomIndex];
+      const nextSong = pickNextSong();
+      currentSong = nextSong || livePlaylist[Math.floor(Math.random() * livePlaylist.length)];
       
       const streamUrl = `https://${USERNAME}.github.io/${REPO_NAME}/${encodeURIComponent(currentSong)}`;
       audioPlayer.src = streamUrl;

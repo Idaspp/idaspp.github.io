@@ -253,7 +253,7 @@
       gl.uniform1i(gl.getUniformLocation(program, 'uCharAtlas'), 0);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
-      time += 16;
+      time += 1;
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);

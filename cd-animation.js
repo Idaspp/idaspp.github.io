@@ -25,7 +25,7 @@
   // Toggle arrow (visible as tab when drawer is closed)
   const toggleArrow = document.createElement('button');
   toggleArrow.id = 'cd-toggle-arrow';
-  toggleArrow.textContent = '>';
+  toggleArrow.textContent = '>\n>';
   toggleArrow.style.cssText = `
     -webkit-text-stroke: 7px black;
     paint-order: stroke fill;  
@@ -312,7 +312,7 @@
       toggleArrow.style.left = arrowLeft + 'px';
     });
     
-    toggleArrow.textContent = isDrawerOpen ? '<' : '>';
+    toggleArrow.textContent = isDrawerOpen ? '«' : '»';
     
     if(isDrawerOpen) {
       loadCD();
@@ -361,7 +361,7 @@
   requestAnimationFrame(() => {
     toggleArrow.style.left = '0px';
   });
-  toggleArrow.textContent = '>';
+  toggleArrow.textContent = '»';
   
   // SAFE LOAD PATTERN: Bind the load event BEFORE setting the source path
   image.onload = function() {
