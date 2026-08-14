@@ -11,10 +11,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     pointer-events: auto;
     font-family: var(--font-body);
   `;
+
+  const DividerBar = document.createElement('div');
+  DividerBar.id = 'DividerBar';
+  DividerBar.style.cssText = `
+    font-size: 24px;
+    margin-bottom: 0px;
+    letter-spacing: 2px;
+    font-family: var(--font-body);
+    opacity: 0.6;
+    color: hsl(var(--foreground));
+  `;
+  DividerBar.textContent = '─────────────';
 
   // Create controls row
   const controlsRow = document.createElement('div');
@@ -23,7 +35,7 @@
     display: flex;
     justify-content: center;
     gap: 25px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   `;
 
   // Create buttons
@@ -40,6 +52,7 @@
     font-size: 28px;
     padding: 0;
     cursor: pointer;
+    transition: transform 100ms ease;
   `;
 
   const playPauseBtn = document.createElement('button');
@@ -55,6 +68,7 @@
     font-size: 28px;
     padding: 0;
     cursor: pointer;
+    transition: transform 100ms ease;
   `;
 
   const forwardBtn = document.createElement('button');
@@ -70,6 +84,7 @@
     font-size: 28px;
     padding: 0;
     cursor: pointer;
+    transition: transform 100ms ease;
   `;
 
   const nextBtn = document.createElement('button');
@@ -85,6 +100,7 @@
     font-size: 28px;
     padding: 0;
     cursor: pointer;
+    transition: transform 100ms ease;
   `;
 
   controlsRow.appendChild(backBtn);
@@ -97,12 +113,12 @@
   progressBar.id = 'progressBar';
   progressBar.style.cssText = `
     font-size: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     letter-spacing: 2px;
     font-family: var(--font-body);
     color: hsl(var(--foreground));
   `;
-  progressBar.textContent = '────────────';
+  progressBar.textContent = '─────────────';
 
   // Create status display
   const statusDiv = document.createElement('div');
@@ -110,9 +126,10 @@
   statusDiv.style.cssText = `
     -webkit-text-stroke: 7px black;
     paint-order: stroke fill;  
-    font-size: 16px;
+    font-size: 20px;
     color: hsl(var(--foreground));
-    word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
     max-width: 400px;
     margin: 0 auto;
     font-family: var(--font-body);
@@ -124,6 +141,7 @@
   audioPlayer.id = 'audioPlayer';
   audioPlayer.style.display = 'none';
 
+  playerContainer.appendChild(DividerBar);
   playerContainer.appendChild(controlsRow);
   playerContainer.appendChild(progressBar);
   playerContainer.appendChild(statusDiv);
@@ -181,12 +199,12 @@
       audioPlayer.load();
       
       audioPlayer.play().then(() => {
-        statusDiv.textContent = currentSong;
+        statusDiv.textContent = currentSong.replace(/_/g, ' ');
         playPauseBtn.textContent = "⏸";
         nextBtn.disabled = false;
         if (onPlayStateChangeCallback) onPlayStateChangeCallback(true);
       }).catch(e => {
-        statusDiv.textContent = currentSong;
+        statusDiv.textContent = currentSong.replace(/_/g, ' ');
         playPauseBtn.textContent = "⏵";
         nextBtn.disabled = false;
         if (onPlayStateChangeCallback) onPlayStateChangeCallback(false);
@@ -211,12 +229,12 @@
     if (audioPlayer.paused) {
       audioPlayer.play();
       playPauseBtn.textContent = "⏸";
-      if (currentSong) statusDiv.textContent = currentSong;
+      if (currentSong) statusDiv.textContent = currentSong.replace(/_/g, ' ');
       if (onPlayStateChangeCallback) onPlayStateChangeCallback(true);
     } else {
       audioPlayer.pause();
       playPauseBtn.textContent = "⏵";
-      if (currentSong) statusDiv.textContent = currentSong;
+      if (currentSong) statusDiv.textContent = currentSong.replace(/_/g, ' ');
       if (onPlayStateChangeCallback) onPlayStateChangeCallback(false);
     }
   });
@@ -229,6 +247,17 @@
   forwardBtn.addEventListener('click', () => {
     if (!audioPlayer.src) return;
     audioPlayer.currentTime = Math.min(audioPlayer.duration || 9999, audioPlayer.currentTime + 5);
+  });
+
+  // Hover effects for buttons
+  const buttons = [backBtn, playPauseBtn, forwardBtn, nextBtn];
+  buttons.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      btn.style.transform = 'scale(0.95)';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = 'scale(1)';
+    });
   });
 
   // Time ticker monitor

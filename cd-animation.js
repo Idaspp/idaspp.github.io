@@ -6,6 +6,7 @@
   const outputStretch = 2;
   const FRAME_COUNT = 12;
   const CACHE_KEY = 'cd-animation-frames-v1';
+  localStorage.removeItem(CACHE_KEY); // Clear cache for testing purposes
   // Off-canvas drawer wrapper
   const drawer = document.createElement('div');
   drawer.id = 'cd-drawer';
@@ -26,6 +27,8 @@
   toggleArrow.id = 'cd-toggle-arrow';
   toggleArrow.textContent = '>';
   toggleArrow.style.cssText = `
+    -webkit-text-stroke: 7px black;
+    paint-order: stroke fill;  
     position: fixed;
     bottom: calc(20px + 160px);
     left: 0px;
@@ -78,9 +81,8 @@
   mediaPlayerWrapper.id = 'media-player-wrapper';
   mediaPlayerWrapper.style.cssText = `
     width: 100%;
-    margin-top: 15px;
-    border-top: 1px solid hsl(var(--foreground));
-    padding-top: 15px;
+    margin-top: 0px;
+    padding-top: 0px;
     padding-left: 10px;
     padding-right: 10px;
     box-sizing: border-box;

@@ -59,7 +59,6 @@
       href="https://fonts.googleapis.com/css2?family=VT323:wght@400&family=Press+Start+2P:wght@400&display=swap"
     />
     <link rel="stylesheet" href="./ascii-bg.css" />
-    <link rel="stylesheet" href="./media-player.css" />
     <style>
       :root {
         --background: 0 0% 0%;
@@ -209,12 +208,52 @@
         line-height: 1;
       }
 
+      @media (max-width: 768px) {
+        #ascii-cd-raster-container {
+          position: static;
+          background: transparent;
+          border: none;
+          border-radius: 0;
+          padding: 0;
+          z-index: auto;
+          pointer-events: auto;
+        }
+
+        #cd-drawer {
+          background: rgba(0, 0, 0, 0.8);
+          border: 1px solid hsl(var(--foreground));
+          border-radius: 8px;
+          padding: 12px;
+        }
+        
+        #cd-toggle-arrow {
+          display: none;
+        }
+      }
+
       #ascii-cd-raster {
         margin: 0;
         letter-spacing: 0;
         font-size: 14px;
         line-height: 1;
         font-family: var(--font-body);
+        display: inline-block;
+        overflow: hidden;
+        padding: 0;
+        position: relative;
+      }
+
+      #ascii-cd-raster::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 80%;
+        background: black;
+        border-radius: 50%;
+        z-index: -1;
       }
 
       #ascii-cd-raster .ascii-cd-cell {
@@ -223,7 +262,6 @@
         align-items: center;
         width: 1ch;
         line-height: 1;
-        background: black;
         color: hsl(var(--foreground));
       }
     </style>
@@ -256,7 +294,7 @@
        ███████████████████████████████████████████████████
        ██████████ █████████████████████████    ████████████
      ████████████  ██████████████████   ██     ███████████████
-    ██████████████ ████████████       █████    ███████████████
+    ██████████████ ████████████       █████    ███████████████    
       ███████████  █████████    ███████████    ██████████████
         ███████    ███████     ████████████    ██████████
           █                     ████████          █████
@@ -316,7 +354,7 @@
           </div>
         </div>
       </section>
-      <section id="release-info" class="bg-background py-2">
+      <section id="release-info" class="bg-background py-2 mt-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
             class="ascii-hide with-cat border border-foreground font-body text-foreground text-base"
@@ -346,6 +384,17 @@
   <script src="./cat-animation.js" defer></script>
   <script src="./media-player.js" defer></script>
   <script src="./cd-animation.js" defer></script>
+  <script>
+    // Mount media player after scripts load
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof MediaPlayer !== 'undefined') {
+        const wrapper = document.getElementById('media-player-wrapper');
+        if (wrapper) {
+          MediaPlayer.mount(wrapper);
+        }
+      }
+    });
+  </script>
             <!-- Menu buttons -->
             <div class="border-b border-foreground px-2 py-2">
               <div class="flex flex-wrap items-center justify-center gap-2">
