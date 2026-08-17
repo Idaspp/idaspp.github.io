@@ -1,4 +1,8 @@
 (function(){
+  if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+    return;
+  }
+
   const CHARS = ' .:-=+08#%@▓';
   const cols = 20;
   const rows = 20;
@@ -6,8 +10,8 @@
   const outputStretch = 2;
   const FRAME_COUNT = 12;
   const CACHE_KEY = 'cd-animation-frames-v1';
-  localStorage.removeItem(CACHE_KEY); // Clear cache for testing purposes
-  // Off-canvas drawer wrapper
+  localStorage.removeItem(CACHE_KEY); // Clear cache for testing purposes REMOVE LATER
+  // Off canvas drawer wrapper
   const drawer = document.createElement('div');
   drawer.id = 'cd-drawer';
   drawer.style.cssText = `
@@ -22,10 +26,32 @@
     transition: left 0.5s ease-in-out;
   `;
 
-  // Toggle arrow (visible as tab when drawer is closed)
+  const arrowPulseStyle = document.createElement('style');
+  arrowPulseStyle.textContent = `
+    @keyframes cdToggleIdlePulse {
+      0%, 100% {
+        color: white;
+        filter: brightness(1);
+        opacity: 1;
+      }
+      50% {
+        color: rgba(247, 247, 247, 0.9);
+        filter: brightness(0.45);
+        opacity: 0.9;
+      }
+    }
+
+    #cd-toggle-arrow.idle-pulse {
+      animation: cdToggleIdlePulse 5s ease-in-out infinite;
+    }
+  `;
+  document.head.appendChild(arrowPulseStyle);
+
+  // Toggle arrow
   const toggleArrow = document.createElement('button');
   toggleArrow.id = 'cd-toggle-arrow';
   toggleArrow.textContent = '>\n>';
+  toggleArrow.classList.add('idle-pulse');
   toggleArrow.style.cssText = `
     -webkit-text-stroke: 7px black;
     paint-order: stroke fill;  
@@ -47,13 +73,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: left 0.5s ease-in-out, transform 80ms steps(2, end);
+    transition: left 0.5s ease-in-out, transform 80ms steps(2, end), color 0.2s ease, filter 0.2s ease;
     user-select: none;
     flex-shrink: 0;
     transform: translateY(50%);
   `;
 
-  // ASCII CD content container (no background)
+  // ascii CD content container
   const cdContent = document.createElement('div');
   cdContent.id = 'ascii-cd-drawer-content';
   cdContent.style.cssText = `
@@ -76,7 +102,7 @@
   `;
   cdContent.appendChild(pre);
 
-  // Media player container (will be populated by MediaPlayer module)
+  // Media player container
   const mediaPlayerWrapper = document.createElement('div');
   mediaPlayerWrapper.id = 'media-player-wrapper';
   mediaPlayerWrapper.style.cssText = `
@@ -88,7 +114,7 @@
     box-sizing: border-box;
   `;
 
-  // Assemble drawer (arrow is separate, fixed position)
+  // Assembling the drawer
   drawer.appendChild(cdContent);
   drawer.appendChild(mediaPlayerWrapper);
   document.body.appendChild(drawer);
@@ -100,6 +126,7 @@
   let isDrawerOpen = false;
   let animationFrameId = null;
   let isPlayingAudio = false;
+  let hasBeenClicked = false;
 
   function mapChar(value){
     const idx = Math.floor((1 - value) * (CHARS.length - 1));
@@ -233,7 +260,7 @@
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify(frames));
     } catch(e) {
-      // localStorage full or disabled, use in-memory only
+      // localStorage is full or disabled therefore must use in-memory only
     }
   }
 
@@ -246,7 +273,7 @@
 
   function startAnimation(){
     if(animationFrameId) return;
-    if(!isDrawerOpen || !isPlayingAudio) return; // Only animate if drawer is open AND audio is playing
+    if(!isDrawerOpen || !isPlayingAudio) return; // Cd animates when drawer is open and music is playing
     displayFrame();
     animationFrameId = setInterval(displayFrame, 200);
   }
@@ -271,14 +298,14 @@
       setTimeout(loadCD, 200);
       return;
     }
-    // Try to load cached frames
+    // Try and load cached frames
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if(cached){
         frames = JSON.parse(cached);
       }
     } catch(e) {
-      // Ignore errors
+      // Ignore errors because I don't want it crashing
     }
 
     // Generate frames if not cached
@@ -286,7 +313,7 @@
       generateAllFrames();
     }
 
-    // Set up media player callback if available
+    // Set up media player callback if possible
     if(window.MediaPlayer){
       window.MediaPlayer.onPlayStateChange((isPlaying) => {
         isPlayingAudio = isPlaying;
@@ -300,14 +327,20 @@
   }
 
   toggleArrow.addEventListener('click', () => {
-    updatePositions(); // Ensure width is fresh
+    hasBeenClicked = true;
+    toggleArrow.classList.remove('idle-pulse');
+    toggleArrow.style.animation = 'none';
+    toggleArrow.style.filter = 'none';
+    toggleArrow.style.color = 'hsl(var(--foreground))';
+
+    updatePositions(); // Ensure width up to date
     isDrawerOpen = !isDrawerOpen;
     const drawerLeft = isDrawerOpen ? 0 : -cdWidth;
     drawer.style.left = drawerLeft + 'px';
     
-    // Update arrow position after drawer has positioned
+    // Update arrow position after drawer has been positioned
     requestAnimationFrame(() => {
-      updatePositions(); // Re-measure in case width changed
+      updatePositions(); // Measure again just in case the width changed
       const arrowLeft = Math.max(drawerLeft + cdWidth, 0);
       toggleArrow.style.left = arrowLeft + 'px';
     });
@@ -332,7 +365,7 @@
     toggleArrow.style.transform = 'translateY(50%)';
   });
 
-  // Initialize arrow position (starts at drawer left + CD width)
+  // Initialize arrow position at drawer left + cd width
   let cdWidth = cols * cellSize * outputStretch; 
 
   function updatePositions() {
@@ -355,17 +388,23 @@
     }
   };
   
-  // Set initial hidden positions
+  // Set initial positions
   updatePositionsOnce();
   drawer.style.left = -cdWidth + 'px';
   requestAnimationFrame(() => {
     toggleArrow.style.left = '0px';
   });
   toggleArrow.textContent = '»';
+  if (!hasBeenClicked) {
+    toggleArrow.classList.add('idle-pulse');
+  }
+  if (!hasBeenClicked) {
+    toggleArrow.classList.add('idle-pulse');
+  }
   
-  // SAFE LOAD PATTERN: Bind the load event BEFORE setting the source path
+  // Bind the load event before setting the source image path
   image.onload = function() {
-    // 1. Generate frames immediately now that the image is officially in memory
+    // Generate frames once the image is in memory
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -379,12 +418,12 @@
       generateAllFrames();
     }
 
-    // 2. Lock down visual metrics
+    // Lock down visual metrics
     updatePositions();
     currentFrameIndex = 0;
-    displayFrame(); // Display frame 0 as static baseline
+    displayFrame();
 
-    // 3. Attach media hooks safely
+    // Attach media hooks safely
     if (window.MediaPlayer) {
       window.MediaPlayer.onPlayStateChange((isPlaying) => {
         isPlayingAudio = isPlaying;
@@ -395,6 +434,6 @@
     updateAnimationState();
   };
 
-  // Trigger browser download safely
+  // Trigger image loading
   image.src = './images/cd.svg';
 })();

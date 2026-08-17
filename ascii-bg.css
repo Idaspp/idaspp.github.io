@@ -1,4 +1,4 @@
-/* Full-screen ASCII Perlin background */
+/* ascii perlin background */
 #ascii-bg-root{
   position:fixed;
   inset:0;
@@ -13,21 +13,14 @@
   display:block;
 }
 
-/* Monospace grid styling */
-.ascii-char{font-family: monospace;}
-
-/* Utility class to force hiding the background inside a boxed area.
-   Add `ascii-hide` to any container that should NOT show the animated background.
-   It sets a stacking context and a solid background by default; override
-   `--box-bg` to match your site's panel color. */
+/* Utility class to force hiding the background inside a boxed area. */
 .ascii-hide{
   position:relative;
   z-index:2;
   background: rgba(0, 0, 0, 0.96);
 }
 
-/* If your layout uses a wrapper with class `site-root`, raise it above the
-   background so normal content appears on top. */
+/* Raises site root above bg */
 .site-root{position:relative; z-index:1}
 
 .ascii-wrapper {
@@ -69,46 +62,52 @@
   color: #000000;
 }
 
-/* Character-level hover highlight inside boxed content, excluding buttons. */
-.ascii-hide .hover-char {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 1ch;
-  aspect-ratio: 1 / 1;
-  min-width: 1ch;
-  height: 1.1em;
-  line-height: 1;
-  white-space: pre;
-  font-family: inherit;
-  color: inherit;
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
-}
 
-.ascii-hide .hover-char.whitespace {
-  visibility: hidden;
-}
-
-.ascii-hide .hover-char:hover {
-  animation: ascii-flash 1200ms steps(1, start) infinite;
-  border: 1px solid rgba(140, 140, 140, 0.8);
-  border-radius: 0.2rem;
-}
-
-@keyframes ascii-flash {
-  0%, 40% {
-    background-color: rgba(128, 128, 128, 0.75);
-    color: #000000;
-  }
-  41%, 100% {
-    background-color: transparent;
-    color: inherit;
-  }
-}
-
-/* Make the area outside the main boxed panel transparent so the ASCII background shows through. */
+/* Makes the area outside the main container transparent so the ascii bg shows through. */
 .bg-background,
 #release-info,
 #footer {
   background-color: transparent !important;
+}
+
+/* The terminal cursor hover effect */
+.hover-char {
+  display: inline;
+  position: relative;
+  white-space: normal;
+  font-family: inherit;
+  color: inherit;
+  background-color: transparent;
+  transition: background-color 80ms ease, color 80ms ease, box-shadow 80ms ease;
+  box-shadow: inset 0 0 0 1px transparent;
+  cursor: auto;
+}
+
+.hover-char.whitespace {
+  display: inline;
+  white-space: pre;
+}
+
+.hover-char:hover {
+  animation: terminal-box-blink 1000ms steps(1, start) infinite;
+  background-color: hsl(var(--foreground));
+  color: hsl(var(--background));
+  box-shadow: inset 0 0 0 1px hsl(var(--foreground));
+  cursor: none;
+}
+
+body.terminal-cursor-hidden,
+body.terminal-cursor-hidden * {
+  cursor: none !important;
+}
+
+@keyframes terminal-box-blink {
+  0%, 49% {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+  50%, 100% {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
 }

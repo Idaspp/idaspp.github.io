@@ -1,8 +1,8 @@
 (function(){
-  // ⚙️ CONFIGURATION
+  // Config
   const USERNAME = 'Idaspp';
   const REPO_NAME = 'Favourite_Songs';
-  const BAR_TOTAL_STEPS = 12; // Number of characters across the bar track
+  const BAR_TOTAL_STEPS = 12; // Num dashes not including the current pos circle
 
   // Create player container
   const playerContainer = document.createElement('div');
@@ -42,7 +42,7 @@
   const backBtn = document.createElement('button');
   backBtn.id = 'backBtn';
   backBtn.className = 'control-btn';
-  backBtn.textContent = '◄';
+  backBtn.textContent = '<<';
   backBtn.title = 'Back 5s';
   backBtn.style.cssText = `
     background: none;
@@ -58,7 +58,7 @@
   const playPauseBtn = document.createElement('button');
   playPauseBtn.id = 'playPauseBtn';
   playPauseBtn.className = 'control-btn';
-  playPauseBtn.textContent = '⏸';
+  playPauseBtn.textContent = '[>';
   playPauseBtn.title = 'Play / Pause';
   playPauseBtn.style.cssText = `
     background: none;
@@ -74,7 +74,7 @@
   const forwardBtn = document.createElement('button');
   forwardBtn.id = 'forwardBtn';
   forwardBtn.className = 'control-btn';
-  forwardBtn.textContent = '►';
+  forwardBtn.textContent = '>>';
   forwardBtn.title = 'Forward 5s';
   forwardBtn.style.cssText = `
     background: none;
@@ -90,7 +90,7 @@
   const nextBtn = document.createElement('button');
   nextBtn.id = 'nextBtn';
   nextBtn.className = 'control-btn';
-  nextBtn.textContent = '⏭';
+  nextBtn.textContent = '>>|';
   nextBtn.title = 'Next Random Song';
   nextBtn.style.cssText = `
     background: none;
@@ -151,24 +151,36 @@
   let livePlaylist = [];
   let currentSong = "";
   let onPlayStateChangeCallback = null;
+  let playedInCycle = new Set(); // Track songs played in current cycle
 
   function pickNextSong() {
     if (livePlaylist.length === 0) return "";
 
-    const eligibleSongs = livePlaylist.filter(song => song !== currentSong);
-    const candidatePool = eligibleSongs.length > 0 ? eligibleSongs : livePlaylist;
+    // Get the unplayed songs
+    const unplayedSongs = livePlaylist.filter(song => !playedInCycle.has(song));
+
+    let candidatePool;
+    if (unplayedSongs.length > 0) {
+      // Still have unplayed songs
+      candidatePool = unplayedSongs;
+    } else {
+      // All songs have been played, clear played song
+      playedInCycle.clear();
+      candidatePool = livePlaylist;
+    }
+
     const randomIndex = Math.floor(Math.random() * candidatePool.length);
     return candidatePool[randomIndex];
   }
 
   // Update progress bar display
-  function updateASCIIProgressBar(percentage) {
+  function updateasciiProgressBar(percentage) {
     const dotPosition = Math.round(percentage * BAR_TOTAL_STEPS);
     
     let visualBar = "";
     for (let i = 0; i <= BAR_TOTAL_STEPS; i++) {
       if (i === dotPosition) {
-        visualBar += "●";
+        visualBar += "○";
       } else {
         visualBar += "─";
       }
@@ -180,7 +192,7 @@
   async function loadAndPlayRandomSong() {
     statusDiv.textContent = "Loading...";
     nextBtn.disabled = true;
-    updateASCIIProgressBar(0);
+    updateasciiProgressBar(0);
 
     try {
       const listUrl = `https://${USERNAME}.github.io/${REPO_NAME}/songs.txt`;
@@ -191,7 +203,7 @@
       }
 
       const textData = await response.text();
-
+      console.log("Fetched songs.txt:", textData);
       livePlaylist = textData.split('\n')
         .map(line => line.trim())
         .filter(line => line.toLowerCase().endsWith('.mp3'));
@@ -203,18 +215,21 @@
       const nextSong = pickNextSong();
       currentSong = nextSong || livePlaylist[Math.floor(Math.random() * livePlaylist.length)];
       
+      // This song has been played
+      playedInCycle.add(currentSong);
+      
       const streamUrl = `https://${USERNAME}.github.io/${REPO_NAME}/${encodeURIComponent(currentSong)}`;
       audioPlayer.src = streamUrl;
       audioPlayer.load();
       
       audioPlayer.play().then(() => {
         statusDiv.textContent = currentSong.replace(/_/g, ' ');
-        playPauseBtn.textContent = "⏸";
+        playPauseBtn.textContent = "II";
         nextBtn.disabled = false;
         if (onPlayStateChangeCallback) onPlayStateChangeCallback(true);
       }).catch(e => {
         statusDiv.textContent = currentSong.replace(/_/g, ' ');
-        playPauseBtn.textContent = "⏵";
+        playPauseBtn.textContent = "[>";
         nextBtn.disabled = false;
         if (onPlayStateChangeCallback) onPlayStateChangeCallback(false);
       });
@@ -237,12 +252,12 @@
     }
     if (audioPlayer.paused) {
       audioPlayer.play();
-      playPauseBtn.textContent = "⏸";
+      playPauseBtn.textContent = "II";
       if (currentSong) statusDiv.textContent = currentSong.replace(/_/g, ' ');
       if (onPlayStateChangeCallback) onPlayStateChangeCallback(true);
     } else {
       audioPlayer.pause();
-      playPauseBtn.textContent = "⏵";
+      playPauseBtn.textContent = "[>";
       if (currentSong) statusDiv.textContent = currentSong.replace(/_/g, ' ');
       if (onPlayStateChangeCallback) onPlayStateChangeCallback(false);
     }
@@ -273,13 +288,13 @@
   audioPlayer.addEventListener('timeupdate', () => {
     if (!audioPlayer.duration) return;
     const currentPercentage = audioPlayer.currentTime / audioPlayer.duration;
-    updateASCIIProgressBar(currentPercentage);
+    updateasciiProgressBar(currentPercentage);
   });
 
-  // Autoloop on track end
+  // play next song on track end
   audioPlayer.addEventListener('ended', loadAndPlayRandomSong);
 
-  // Public API
+  // Public api
   window.MediaPlayer = {
     getContainer: () => playerContainer,
     getAudioElement: () => audioPlayer,

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="./images/cat-icon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -85,6 +86,16 @@
         background-color: hsl(var(--background));
         color: hsl(var(--foreground));
         font-size: 1rem;
+      }
+      #ascii-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 9999;
+        pointer-events: none;
+        background: transparent;
       }
       .ascii-hide.with-cat {
         font-size: 0.7rem;
@@ -192,7 +203,7 @@
       .cat-black {
         color: hsl(var(--background));
         bottom: 0; 
-        text-shadow: 0 0 2px hsl(var(--background)), 0 0 4px hsl(var(--background));
+        text-shadow: 0 0 3px hsl(var(--background)), 0 0 5px hsl(var(--background));
       }
 
       .cat-claws {
@@ -234,6 +245,94 @@
       }
 
       @media (max-width: 768px) {
+        html {
+          font-size: 22px;
+        }
+
+        body {
+          overflow-x: hidden;
+        }
+
+        #logo .relative {
+          width: 100% !important;
+          max-width: 360px;
+        }
+
+        #logo .ascii-wrapper {
+          width: 100%;
+          max-width: 100%;
+          display: flex;
+          justify-content: center;
+          overflow: visible;
+        }
+
+        #logo .ascii-layer {
+          font-size: 8px;
+          line-height: 1;
+          transform: none;
+          overflow: visible;
+        }
+
+        #logo {
+          padding-top: 0 !important;
+          margin-top: 1rem !important;
+        }
+
+        #release-info {
+          margin-top: 5rem;
+        }
+
+        .ascii-hide.with-cat {
+          max-width: 100% !important;
+        }
+
+        .menu-button {
+          width: 50%;
+          min-width: 0;
+          max-width: calc(50% - 0.25rem);
+        }
+
+        #page-content,
+        #page-about,
+        #page-portfolio,
+        #page-content *,
+        #page-about *,
+        #page-portfolio * {
+          min-width: 0;
+          white-space: normal;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          word-break: normal;
+        }
+
+        #page-content .border-b,
+        #page-content > div,
+        #page-about > div,
+        #page-portfolio > div {
+          max-width: 100%;
+        }
+
+        #footer .flex.items-center.justify-center.gap-0 {
+          flex-wrap: wrap;
+          row-gap: 0.4rem;
+        }
+
+        #footer .px-3.tracking-wide {
+          white-space: normal !important;
+          overflow-wrap: break-word;
+          word-break: normal;
+          text-align: center;
+          line-height: 1.3;
+        }
+
+        #ascii-cd-raster-container,
+        #cd-drawer,
+        #cd-toggle-arrow,
+        #media-player-wrapper,
+        #media-player {
+          display: none !important;
+        }
+
         #ascii-cd-raster-container {
           position: static;
           background: transparent;
@@ -243,17 +342,52 @@
           z-index: auto;
           pointer-events: auto;
         }
+      }
 
-        #cd-drawer {
-          background: rgba(0, 0, 0, 0.8);
-          border: 1px solid hsl(var(--foreground));
-          border-radius: 8px;
-          padding: 12px;
-        }
-        
-        #cd-toggle-arrow {
-          display: none;
-        }
+      body,
+      #page-content,
+      #page-content *,
+      #page-about,
+      #page-about *,
+      #page-portfolio,
+      #page-portfolio *,
+      #footer,
+      #footer * {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: normal;
+      }
+
+      #page-content .border-b.flex,
+      #page-about .border-b.flex,
+      #page-portfolio .border-b.flex,
+      #page-content .flex.items-center,
+      #page-about .flex.items-center,
+      #page-portfolio .flex.items-center {
+        flex-wrap: wrap;
+        row-gap: 0.25rem;
+      }
+
+      #page-content .border-b.flex > .flex-1,
+      #page-content .border-b.flex > span:nth-child(2),
+      #page-content .border-b.flex > span:last-child,
+      #page-content .border-b.flex > div.flex-1,
+      #page-about .border-b.flex > .flex-1,
+      #page-portfolio .border-b.flex > .flex-1 {
+        min-width: 0;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+
+      #page-content .flex-1,
+      #page-about .flex-1,
+      #page-portfolio .flex-1,
+      #page-content .border-b span,
+      #page-about .border-b span,
+      #page-portfolio .border-b span {
+        min-width: 0;
+        white-space: normal;
       }
 
       #ascii-cd-raster {
@@ -292,6 +426,7 @@
     </style>
   </head>
   <body>
+    <canvas id="ascii-canvas" aria-hidden="true"></canvas>
     <div
       class="site-root min-h-screen text-foreground flex flex-col justify-center py-0"
     >
@@ -410,8 +545,21 @@
   <script src="./media-player.js" defer></script>
   <script src="./cd-animation.js" defer></script>
   <script>
+    function isMobileViewport() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const aspectRatio = width / height;
+      const shortSide = Math.min(width, height);
+
+      return aspectRatio < 1.15 && shortSide < 900;
+    }
+
     // Mount media player after scripts load
     document.addEventListener('DOMContentLoaded', function() {
+      if (isMobileViewport()) {
+        return;
+      }
+
       if (typeof MediaPlayer !== 'undefined') {
         const wrapper = document.getElementById('media-player-wrapper');
         if (wrapper) {
@@ -438,103 +586,68 @@
               </div>
             </div>
             <div id="page-content">
-            <!-- Header row: P r o d u c t i o n S -->
+            <!-- Header row -->
             <div
-              class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground"
-            >
-              L &nbsp; o &nbsp; r &nbsp; e &nbsp; m &nbsp; i &nbsp; p &nbsp; s &nbsp; u &nbsp; m
-            </div>
-            <!-- RELEASE INFORMATION banner -->
-            <div
-              class="border-b border-foreground flex items-center justify-between px-2 py-1"
+              class="border-b border-foreground flex items-center justify-between px-2 pt-2 pb-1"
             >
               <span class="text-foreground">: :</span>
-              <span class="text-foreground tracking-widest"
-                >&mdash;&nbsp; Lorem ipsum dolor sit amet, consectetur adipiscing elit, &nbsp;&mdash;</span
+              <span class="text-foreground tracking-widest pt-1"
+                >&mdash;&nbsp;&nbsp;M&nbsp;A&nbsp;I&nbsp;N&nbsp;&nbsp;P&nbsp;A&nbsp;G&nbsp;E&nbsp;&nbsp;&mdash;</span
               >
               <span class="text-foreground">: :</span>
             </div>
-            <!-- Proudly Presents -->
+            <!-- Second header -->
             <div
               class="border-b border-foreground text-center py-2 px-4 text-foreground"
-            >
-              ··Lorem ipsum dolor sit amet, consectetur adipiscing elit··
-            </div>
-            <!-- File Name -->
+            >··General Information··</div>
+            <!-- Introduction -->
             <div
               class="border-b border-foreground flex items-center px-3 py-2 gap-2"
             >
-              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
-              <span class="text-foreground flex-1">[ lorem ipsum</span>
+              <span class="text-foreground w-20 shrink-0">Introduction:</span>
+              <span class="text-foreground flex-1">[ Hello, I'm Ida!</span>
               <span class="text-foreground">]</span>
             </div>
-            <!-- Title -->
+            <!-- Interests -->
             <div
               class="border-b border-foreground flex items-center px-3 py-2 gap-2"
             >
-              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
+              <span class="text-foreground w-20 shrink-0">Skills:</span>
               <span class="text-foreground flex-1"
-                >[ lorem ipsum</span
+                >[ Programmer, Video editor, Artist, Musician</span
               >
               <span class="text-foreground">]</span>
             </div>
-            <!-- Released / Total Bytes -->
-            <div class="border-b border-foreground flex items-center px-3 py-2">
-              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
-              <span class="text-foreground">[ lorem ipsum</span>
-              <span class="text-foreground mx-2">]</span>
-              <span class="text-foreground flex-1 pl-4"
-                >lorem ipsum [ lorem ipsum</span
+            <!-- Known languages -->
+            <div
+              class="border-b border-foreground flex items-center px-3 py-2 gap-2"
               >
-              <span class="text-foreground">]</span>
-            </div>
-            <!-- Author(s) / Packaged By -->
-            <div class="border-b border-foreground flex items-center px-3 py-2">
-              <span class="text-foreground w-24 shrink-0">lorem ipsum</span>
-              <span class="text-foreground">[ lorem ipsum</span>
-              <span class="text-foreground mx-2">]</span>
-              <span class="text-foreground flex-1 pl-4"
-                >[lorem ipsum</span
-              >
+              <span class="text-foreground w-20 shrink-0">Languages I know:</span>
+              <span class="text-foreground flex-1">[ C++, Python, Luau, Java, </span>
               <span class="text-foreground">]</span>
             </div>
             <!-- Description -->
             <div class="border-b border-foreground flex px-3 py-2 gap-2">
-              <span class="text-foreground w-24 shrink-0 pt-0"
-                >lorem ipsum</span
+              <span class="text-foreground w-15 shrink-0 pt-0"
+                >Description:</span
               >
               <div class="flex-1 text-center text-foreground leading-relaxed">
                 <span>[</span>
                 <div class="px-2">
-                  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-                  <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-                  <div>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  </div>
-                  <div>Lorem ipsum.</div>
+                  <div>I'm a developer who creates games and systems with never before seen ideas for fun. I specialize in programming, but I can also do a bit of everything else. I adapt to new environments quickly, and am dedicated to my work.</div>
                 </div>
                 <span>]</span>
               </div>
-            </div>
-            <!-- Notes -->
-            <div
-              class="border-b border-foreground flex items-center px-3 py-2 gap-2"
-            >
-              <span class="text-foreground w-24 shrink-0">lorem</span>
-              <span class="text-foreground flex-1">[</span>
-              <span class="text-foreground">]</span>
             </div>
             <!-- Graphics Support -->
             <div
               class="border-b border-foreground flex items-center px-3 py-2 gap-4 flex-wrap"
             >
-              <span class="text-foreground">lorem ipsum</span>
-              <span class="text-foreground">[ ] lorem</span>
-              <span class="text-foreground">[ ] ipsum</span>
-              <span class="text-foreground"
-                >[<span class="text-foreground font-bold">■</span>] ipsum</span
-              >
-              <span class="text-foreground">[ ] lorem</span>
+              <span class="text-foreground">Statuses:</span>
+              <span class="text-foreground">[■] Eepy</span>
+              <span class="text-foreground">[&nbsp;] Touching Grass</span>
+              <span class="text-foreground">[■] Silly</span>
+              <span class="text-foreground">[■] Coding</span>
             </div>
             <!-- Additional releases -->
             <div class="flex items-center px-3 py-2 text-foreground">
@@ -544,25 +657,79 @@
         </div>
       </div>
       <template id="page-about">
-        <div>
-          <div class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground">ABOUT ME</div>
+            <div
+              class="border-b border-foreground flex items-center justify-between px-2 pt-2 pb-1"
+            >
+              <span class="text-foreground">: :</span>
+              <span class="text-foreground tracking-widest"
+                >&mdash;&nbsp;&nbsp;A&nbsp;B&nbsp;O&nbsp;U&nbsp;T&nbsp;&nbsp;M&nbsp;E&nbsp;&nbsp;&mdash;</span
+              >
+              <span class="text-foreground">: :</span>
+            </div>
           <div class="border-b border-foreground text-center py-2 px-4 text-foreground">··Who I Am··</div>
-          <div class="border-b border-foreground flex flex-col gap-2 px-3 py-4 text-foreground leading-relaxed">
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            <div>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+          <div class="border-b border-foreground px-3 py-4 text-foreground leading-relaxed" style="overflow: auto;">
+            <div id="about-ascii-container" class="float-right ml-3 mb-3" style="position: relative; width: fit-content;">
+              <pre id="about-ascii-art" class="text-foreground font-body" style="white-space: pre; line-height: 1; margin-top: 0; margin-bottom: 0; font-family: monospace; font-size: 0.7rem; transition: opacity 1s ease;">
+        _.--:_
+       /      '.
+      ;,'-.     \
+    .'/   ‗¿:.  :
+    y/|  _   /  ;
+    \  \| |./  ;
+     '=.+,.'   :,
+    Z'    0      R,
+     )    |'--.   k
+    /    /   l ''.k
+   /_..-'   /;|   \
+  ;    /    ]':\   ;
+ /    ,Y       \]   |
+Y</pre>
+              <img id="about-oc-art" src="./images/oc-art-1.png" alt="OC Art" style="position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 1s ease; max-width: 100%; height: auto; display: block;">
+            </div>
+            <div>• Game developer! Former Roblox game dev, I know C++, Java, Python, Lua & Luau. I'm learning how to use unreal engine right now.</div>
+            <div>• I listen to lots of different artists and groups, ex: Rachminov, Kazuhito Yamashita, Fred Astiare, King Crimson.</div>
+            <div>• Fav anime/manga: Girls' Last Tour, Shimeji Simulation, Azumanga Daioh, The Promised Neverland(S1 only).</div>
+            <div>• Love books: Piranesi, Walking to Aldebaran, Alice in wonderland, The Mysterious Island, Sherlock Holmes, There Is No Antimemetics Division, More but I can't remember.</div>
+            <div>• Games: Metal Gear Solid V, Metal Gear Rising, Isle(Roblox), Celeste, Baba is You, Zelda BOTW.</div>
+            <div>
+                <div id="about-ascii-container-left" style="float: left; clear: left; margin: 0.25rem 0.75rem 0 0; position: relative; width: fit-content;">
+                  <pre id="about-ascii-art-left" class="text-foreground font-body" style="white-space: pre; line-height: 1; margin: 0; font-family: monospace; font-size: 0.7rem; transition: opacity 1s ease;">
+      .;====;. 
+    ,'`.     `',
+   /< '\.y'|/ ' \
+  / |/ '~  ~'\:' '.
+ :/'` \      /  \ ]
+' \    '."".'   / '
+ '.>_    ;;   _/.'
+.-' _-*-` ';  .;. p
+--''  |   _' /   /\
+   _.. \'` .'  _'.'
+''        -- '    '\</pre>
+                  <img id="about-oc-art-left" src="./images/oc-art-2.png" alt="OC Art" style="position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 1s ease; max-width: 100%; height: auto; display: block;">
+                </div>
+                • Quotes:<br>
+                &emsp;- "Tis but a scratch." - The Black Knight<br>
+                &emsp;- "Fool of a Took!" - Gandalf<br>
+                &emsp;- "The rule is, jam to-morrow and jam yesterday, but never jam to-day" - The Red Queen<br>
+                &emsp;- “Oo, you are so sharp you’ll cut yourself one of these days” - Terry Pratchett<br>
+            </div>
           </div>
-        </div>
       </template>
       <template id="page-portfolio">
-        <div>
-          <div class="border-b border-foreground px-4 py-1 text-center tracking-[0.4em] text-foreground">PORTFOLIO</div>
+          <div
+              class="border-b border-foreground flex items-center justify-between px-2 pt-2 pb-1"
+            >
+              <span class="text-foreground">: :</span>
+              <span class="text-foreground tracking-widest"
+                >&mdash;&nbsp;&nbsp;P&nbsp;O&nbsp;R&nbsp;T&nbsp;F&nbsp;O&nbsp;L&nbsp;I&nbsp;O&nbsp;&nbsp;&mdash;</span
+              >
+              <span class="text-foreground">: :</span>
+          </div>
           <div class="border-b border-foreground text-center py-2 px-4 text-foreground">··Projects and Work··</div>
           <div class="border-b border-foreground flex flex-col gap-2 px-3 py-4 text-foreground leading-relaxed">
             <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
             <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
           </div>
-        </div>
       </template>
       </section>
       <section id="footer" class="bg-background py-0">
@@ -580,9 +747,10 @@
               class="flex-1 border-t border-foreground/60 mx-1"
               style="max-width: 40px"
             ></span>
-            <span class="px-3 tracking-wide text-foreground whitespace-nowrap"
-              style="font-size: 0.8rem;"
-              >Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span
+            <span
+              class="px-3 tracking-wide text-foreground"
+              style="font-size: 0.8rem; white-space: normal;"
+              >Copyright Idaspp 2026.</span
             >
             <span
               class="flex-1 border-t border-foreground/60 mx-1"
@@ -609,21 +777,71 @@
           portfolio: document.getElementById('page-portfolio'),
         };
 
+        function setupAsciiHover(containerId, asciiId, ocArtId) {
+          const container = document.getElementById(containerId);
+          const ascii = document.getElementById(asciiId);
+          const ocArt = document.getElementById(ocArtId);
+
+          if (container && ascii && ocArt) {
+            let hasUserHovered = false;
+
+            const reveal = () => {
+              ascii.style.opacity = '0';
+              ocArt.style.opacity = '1';
+            };
+
+            const reset = () => {
+              ascii.style.opacity = '1';
+              ocArt.style.opacity = '0';
+            };
+
+            container.addEventListener('mouseenter', () => {
+              hasUserHovered = true;
+              reveal();
+            });
+
+            container.addEventListener('mouseleave', reset);
+
+            return { reveal, reset, get hasUserHovered() { return hasUserHovered; } };
+          }
+
+          return null;
+        }
+
         function setPage(page) {
           if (!contentContainer) return;
           if (page === 'main') {
             contentContainer.innerHTML = initialContent;
-            window.wrapAsciiHoverText && window.wrapAsciiHoverText(contentContainer);
-            return;
+          } else {
+            const template = templates[page];
+            if (template) {
+              contentContainer.innerHTML = template.innerHTML;
+            } else {
+              contentContainer.innerHTML = initialContent;
+            }
           }
-          const template = templates[page];
-          if (template) {
-            contentContainer.innerHTML = template.innerHTML;
-            window.wrapAsciiHoverText && window.wrapAsciiHoverText(contentContainer);
-            return;
+          if (window.wrapAsciiHoverText) {
+            window.wrapAsciiHoverText(contentContainer);
           }
-          contentContainer.innerHTML = initialContent;
-          window.wrapAsciiHoverText && window.wrapAsciiHoverText(contentContainer);
+          
+          // Setup ascii art hover effect for about page
+          if (page === 'about') {
+            const left = setupAsciiHover('about-ascii-container-left', 'about-ascii-art-left', 'about-oc-art-left');
+            const right = setupAsciiHover('about-ascii-container', 'about-ascii-art', 'about-oc-art');
+
+            const hoverTargets = [left, right].filter(Boolean);
+            if (hoverTargets.length) {
+              setTimeout(() => {
+                const hasAnyUserHover = hoverTargets.some((target) => target.hasUserHovered);
+                if (!hasAnyUserHover) {
+                  hoverTargets.forEach(({ reveal }) => reveal());
+                  setTimeout(() => {
+                    hoverTargets.forEach(({ reset }) => reset());
+                  }, 3000);
+                }
+              }, 10000);
+            }
+          }
         }
 
         function loadPage(page) {
@@ -649,6 +867,10 @@
 
         if (location.hash) {
           setPage(location.hash.slice(1));
+        } else {
+          if (window.wrapAsciiHoverText) {
+            window.wrapAsciiHoverText(contentContainer);
+          }
         }
 
         const spawnAsciiParticle = (x, y, angle, speed) => {
@@ -724,8 +946,41 @@
           button.addEventListener('pointerleave', release);
           button.addEventListener('pointercancel', release);
         });
+
+        let terminalCursorRestoreTimer = null;
+        const setTerminalCursorState = (shouldHide) => {
+          document.body.classList.toggle('terminal-cursor-hidden', shouldHide);
+        };
+
+        document.addEventListener('pointerover', (event) => {
+          const char = event.target.closest('.hover-char');
+          if (!char) return;
+          if (terminalCursorRestoreTimer) {
+            clearTimeout(terminalCursorRestoreTimer);
+            terminalCursorRestoreTimer = null;
+          }
+          setTerminalCursorState(true);
+        });
+
+        document.addEventListener('pointerout', (event) => {
+          const char = event.target.closest('.hover-char');
+          if (!char) return;
+          const next = event.relatedTarget && event.relatedTarget.closest
+            ? event.relatedTarget.closest('.hover-char')
+            : null;
+          if (next) return;
+          if (terminalCursorRestoreTimer) {
+            clearTimeout(terminalCursorRestoreTimer);
+          }
+          terminalCursorRestoreTimer = setTimeout(() => {
+            if (!document.querySelector('.hover-char:hover')) {
+              setTerminalCursorState(false);
+            }
+          }, 50);
+        });
       })();
     </script>
+    <script src="./fire-loadscreen.js" defer></script>
     <script src="./ascii-bg.js" defer></script>
   </body>
 </html>
