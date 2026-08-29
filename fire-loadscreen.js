@@ -10,7 +10,7 @@ if (!canvas) {
         let height = canvas.height = window.innerHeight;
 
         const burnDensitySequence = ['▓', '@', '%', '#', '0', '8', '+', '=', '-', ':', '.', ' '];
-        const fontSize = 16; 
+        const fontSize = 20; 
 
         ctx.font = `bold ${fontSize}px monospace`;
         const charWidth = Math.ceil(ctx.measureText("M").width);
@@ -48,7 +48,11 @@ if (!canvas) {
         let burnLineY = -100;
         let loadStartTime = Date.now();
         let pageLoadTime = null;
-        const MIN_LOAD_DURATION = 2500; 
+        let burnStartTime = null;
+        const MIN_LOAD_DURATION = 2500;
+        const MAX_PARTICLES_INITIAL = 350;
+        const MAX_PARTICLES_FULL = 1200;
+        const PARTICLE_RAMP_TIME = 1000; // milliseconds to reach full capacity
 
         const particles = [];
         const loaderParticles = []; 
@@ -56,6 +60,14 @@ if (!canvas) {
 
         window.addEventListener('load', () => {
             pageLoadTime = Date.now();
+            // Show content 1 second after page loads
+            setTimeout(() => {
+                const siteRoot = document.querySelector('.site-root');
+                if (siteRoot) {
+                    siteRoot.classList.add('content-loaded');
+                }
+                document.body.classList.add('loading-complete');
+            }, 1000);
         });
 
         function handleResize() {
@@ -121,6 +133,7 @@ if (!canvas) {
                 function finish_loading() {
                     progress = 100;
                     phase = 'burning';
+                    burnStartTime = Date.now();
                     convertLoaderToParticles();
                 }
 
@@ -144,23 +157,62 @@ if (!canvas) {
             return baseLineY + layer1 + layer2 + layer3;
         }
 
+        function getMaxParticles() {
+            if (burnStartTime === null) return MAX_PARTICLES_INITIAL;
+            const elapsedSinceBurn = Date.now() - burnStartTime;
+            const rampProgress = Math.min(elapsedSinceBurn / PARTICLE_RAMP_TIME, 1.0);
+            return Math.floor(MAX_PARTICLES_INITIAL + (MAX_PARTICLES_FULL - MAX_PARTICLES_INITIAL) * rampProgress);
+        }
+
         function spawnFireEmberRow() {
             const stepX = charWidth * 2.5;
+            const maxParticles = getMaxParticles();
+            const canSpawn = maxParticles - particles.length;
+            
+            if (canSpawn <= 0) return;
 
+            // Calculate potential spawn positions
+            const potentialPositions = [];
             for (let x = 0; x < width; x += stepX) {
-                if (Math.random() > 0.4) continue;
-                let randomX = x + (Math.random() * stepX);
-                if (randomX > width) randomX = width;
-                let targetY = getWaveHeightAt(randomX, burnLineY);
+                potentialPositions.push(x);
+            }
 
-                particles.push({
-                    x: randomX,
-                    y: targetY,
-                    vx: (Math.random() - 0.5) * 1.0,
-                    vy: -(Math.random() * 1.5 + 0.4), 
-                    life: 1.0, 
-                    decay: 0.01 + Math.random() * 0.01 
-                });
+            // If we have fewer particles to spawn than positions, evenly distribute across screen
+            if (canSpawn < potentialPositions.length) {
+                const skipFactor = Math.ceil(potentialPositions.length / canSpawn);
+                for (let i = 0; i < potentialPositions.length && particles.length < maxParticles; i += skipFactor) {
+                    if (Math.random() > 0.4) continue;
+                    let x = potentialPositions[i];
+                    let randomX = x + (Math.random() * stepX);
+                    if (randomX > width) randomX = width;
+                    let targetY = getWaveHeightAt(randomX, burnLineY);
+
+                    particles.push({
+                        x: randomX,
+                        y: targetY,
+                        vx: (Math.random() - 0.5) * 1.0,
+                        vy: -(Math.random() * 1.5 + 0.4), 
+                        life: 1.0, 
+                        decay: 0.01 + Math.random() * 0.01 
+                    });
+                }
+            } else {
+                // Normal spawn when we have plenty of room
+                for (let x = 0; x < width && particles.length < maxParticles; x += stepX) {
+                    if (Math.random() > 0.4) continue;
+                    let randomX = x + (Math.random() * stepX);
+                    if (randomX > width) randomX = width;
+                    let targetY = getWaveHeightAt(randomX, burnLineY);
+
+                    particles.push({
+                        x: randomX,
+                        y: targetY,
+                        vx: (Math.random() - 0.5) * 1.0,
+                        vy: -(Math.random() * 1.5 + 0.4), 
+                        life: 1.0, 
+                        decay: 0.01 + Math.random() * 0.01 
+                    });
+                }
             }
         }
         function animate() {

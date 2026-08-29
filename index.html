@@ -423,6 +423,25 @@
         line-height: 1;
         color: hsl(var(--foreground));
       }
+
+      /* Ensure loading screen is always first thing shown */
+      body {
+        overflow: hidden;
+      }
+
+      .site-root {
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+
+      .site-root.content-loaded {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      body.loading-complete {
+        overflow: auto;
+      }
     </style>
   </head>
   <body>
@@ -639,7 +658,16 @@
                 <span>]</span>
               </div>
             </div>
-            <!-- Graphics Support -->
+            <!-- Contanct -->
+            <div
+              class="border-b border-foreground flex items-center px-3 py-2 gap-2"
+              >
+              <span class="text-foreground w-20 shrink-0">Contact me:</span>
+              <span class="text-foreground flex-0">[</span>
+              <span class="text-foreground flex-1">I am always open to collaborate, chat, and do commisions! Please, do not hesitate to contact me.</span>
+              <span class="text-foreground">]</span>
+            </div>
+            <!-- Statuses -->
             <div
               class="border-b border-foreground flex items-center px-3 py-2 gap-4 flex-wrap"
             >
@@ -648,10 +676,6 @@
               <span class="text-foreground">[&nbsp;] Touching Grass</span>
               <span class="text-foreground">[■] Silly</span>
               <span class="text-foreground">[■] Coding</span>
-            </div>
-            <!-- Additional releases -->
-            <div class="flex items-center px-3 py-2 text-foreground">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </div>
           </div>
         </div>
