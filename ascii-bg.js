@@ -240,6 +240,28 @@
 
     let time = 0;
     function frame(){
+      // Check if background is frozen
+      if (window.isBgFrozen) {
+        // Still render but don't increment time
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(program);
+
+        gl.enableVertexAttribArray(positionLocation);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+        gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+        gl.uniform1f(timeLocation, time);
+        gl.uniform1f(cellSizeLocation, cellSizeDefault * dpr);
+        gl.uniform1f(charCountLocation, CHARS.length);
+        gl.uniform1i(gl.getUniformLocation(program, 'uCharAtlas'), 0);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(frame);
+        return;
+      }
+
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);

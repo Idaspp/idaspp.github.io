@@ -358,6 +358,139 @@
         word-break: normal;
       }
 
+      /* Settings Popup Styles */
+      .settings-trigger {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        width: 2rem;
+        height: 2rem;
+        border: 1px solid hsl(var(--border));
+        background: hsl(var(--panel));
+        color: hsl(var(--foreground));
+        font-family: var(--font-body);
+        font-size: 1.2rem;
+        border-radius: 0px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding: 0;
+      }
+
+      .settings-trigger:hover {
+        background: hsl(var(--background));
+        transform: scale(1.1);
+      }
+
+      .settings-trigger:active {
+        transform: scale(0.95);
+      }
+
+      .settings-popup {
+        position: fixed;
+        bottom: 4rem;
+        right: 1rem;
+        width: min(260px, calc(100vw - 2rem));
+        background: rgba(0, 0, 0, 0.96);
+        border: 1px solid hsl(var(--foreground));
+        border-radius: 0;
+        box-shadow: none;
+        z-index: 10001;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        font-family: var(--font-body);
+      }
+
+      .settings-popup.open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .settings-popup-content {
+        padding: 0.65rem 0.75rem;
+      }
+
+      .settings-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid hsl(var(--border));
+      }
+
+      .settings-header h3 {
+        margin: 0;
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: hsl(var(--foreground));
+      }
+
+      .settings-close {
+        background: none;
+        border: none;
+        color: hsl(var(--foreground));
+        font-size: 0.85rem;
+        cursor: pointer;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background 0.2s ease;
+        margin-left: auto;
+      }
+
+      .settings-close:hover {
+        background: hsl(var(--background));
+      }
+
+      .settings-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .settings-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .settings-label {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        user-select: none;
+        font-size: 0.75rem;
+        line-height: 1.2;
+        color: hsl(var(--foreground));
+      }
+
+      .settings-checkbox {
+        width: 0.85rem;
+        height: 0.85rem;
+        accent-color: hsl(var(--foreground));
+        margin-top: -1px;
+      }
+
+      .settings-description {
+        font-size: 0.85rem;
+        color: hsl(var(--muted));
+        margin: 0.25rem 0 0 1.1rem;
+        line-height: 1.2;
+      }
+
       #page-content .border-b.flex,
       #page-about .border-b.flex,
       #page-portfolio .border-b.flex,
@@ -789,6 +922,27 @@ Y</pre>
           </div>
         </div>
       </section>
+
+      <!-- Settings Popup Trigger -->
+      <button id="settings-trigger" class="settings-trigger" aria-label="Open settings">
+        ⚙
+      </button>
+
+      <!-- Settings Popup -->
+      <div id="settings-popup" class="settings-popup">
+        <div class="settings-popup-content">
+          <div class="settings-header">
+            <h3>Settings</h3>
+          </div>
+          <div class="settings-body">
+            <div class="settings-option">
+              <div class="settings-label" id="freeze-bg-toggle">
+                ☐ Freeze animated background
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       (() => {
@@ -975,6 +1129,57 @@ Y</pre>
         const setTerminalCursorState = (shouldHide) => {
           document.body.classList.toggle('terminal-cursor-hidden', shouldHide);
         };
+
+        // Settings Popup Functionality
+        const settingsTrigger = document.getElementById('settings-trigger');
+        const settingsPopup = document.getElementById('settings-popup');
+        const freezeBgToggle = document.getElementById('freeze-bg-toggle');
+
+        let isBgFrozen = false;
+        let originalTimeIncrement = 1; // Store original time increment value
+
+        // Open settings popup
+        settingsTrigger.addEventListener('click', () => {
+          settingsPopup.classList.toggle('open');
+        });
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!settingsPopup.contains(e.target) && !settingsTrigger.contains(e.target)) {
+            settingsPopup.classList.remove('open');
+          }
+        });
+
+        // Freeze background toggle
+        freezeBgToggle.addEventListener('click', () => {
+          isBgFrozen = !isBgFrozen;
+
+          // Update the visual state
+          freezeBgToggle.textContent = isBgFrozen ? '☑ Freeze animated background' : '☐ Freeze animated background';
+
+          // Find the ascii-bg script and modify its time increment
+          const asciiBgScript = document.querySelector('script[src*="ascii-bg.js"]');
+          if (asciiBgScript) {
+            // We'll need to modify the ascii-bg.js behavior directly
+            // Let's create a flag that the background script can check
+            window.isBgFrozen = isBgFrozen;
+
+            // Also store this in localStorage for persistence
+            localStorage.setItem('idaspp-bg-frozen', isBgFrozen);
+          }
+        });
+
+        // Load saved setting on startup
+        const savedSetting = localStorage.getItem('idaspp-bg-frozen');
+        if (savedSetting === 'true') {
+          isBgFrozen = true;
+          freezeBgToggle.textContent = '☑ Freeze animated background';
+          window.isBgFrozen = true;
+        } else {
+          isBgFrozen = false;
+          freezeBgToggle.textContent = '☐ Freeze animated background';
+          window.isBgFrozen = false;
+        }
 
         document.addEventListener('pointerover', (event) => {
           const char = event.target.closest('.hover-char');
