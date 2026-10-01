@@ -2,9 +2,8 @@ name: Supabase Keep Alive
 
 on:
   schedule:
-    # Runs at minute 0 of every 5th hour (e.g., 12:00, 5:00, 10:00, etc.)
     - cron: '0 */5 * * *'
-  workflow_dispatch: # Allows you to trigger it manually for testing
+  workflow_dispatch:
 
 jobs:
   ping-supabase:
@@ -14,5 +13,4 @@ jobs:
         run: |
           curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/keep_alive?select=*" \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
           -f || exit 1
