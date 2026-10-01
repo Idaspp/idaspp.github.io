@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/x-icon" href="./images/cat-icon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -60,6 +61,7 @@
       href="https://fonts.googleapis.com/css2?family=VT323:wght@400&family=Press+Start+2P:wght@400&display=swap"
     />
     <link rel="stylesheet" href="./ascii-bg.css" />
+    <link rel="stylesheet" href="./comments-widget.css" />
     <style>
       :root {
         --background: 0 0% 0%;
@@ -810,6 +812,9 @@
               <span class="text-foreground">[■] Silly</span>
               <span class="text-foreground">[■] Coding</span>
             </div>
+            <div class="border-b border-foreground flex justify-center px-3 py-2">
+              <button id="comments-toggle" type="button" aria-controls="comments-panel" aria-expanded="false">[ <span class="comments-toggle-label">show comments</span> ]</button>
+            </div>
           </div>
         </div>
       </div>
@@ -889,6 +894,36 @@ Y</pre>
           </div>
       </template>
       </section>
+      <section id="comments-widget" aria-label="Comments">
+        <div id="comments-panel" hidden>
+          <h2>Comments</h2>
+          <div id="comments-auth-row">
+            <div id="comments-user-info" class="comments-user-row"></div>
+            <button id="comments-auth" type="button">Login with Discord</button>
+          </div>
+          <form id="comments-form" hidden>
+            <label for="comments-text">Leave a comment</label>
+            <textarea id="comments-text" rows="3" maxlength="1000" required placeholder="Write something nice..."></textarea>
+            <div id="comments-form-controls">
+              <span id="comments-form-error" class="comments-error" role="status"></span>
+              <button id="comments-post" type="submit">Post Comment</button>
+            </div>
+          </form>
+          <div id="comments-discussion">
+            <h3>Discussion</h3>
+            <p id="comments-status" role="status">Loading…</p>
+            <div id="comments-list"></div>
+            <div id="comments-pager" hidden>
+              <button id="comments-first-btn" type="button">« First</button>
+              <button id="comments-prev-btn" type="button">‹ Prev</button>
+              <span>Page <input id="comments-page-input" type="number" min="1" inputmode="numeric" aria-label="Page number"> of <span id="comments-page-total"></span></span>
+              <button id="comments-next-btn" type="button">Next ›</button>
+              <button id="comments-last-btn" type="button">Last »</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="footer" class="bg-background py-0">
         <div class="max-w-7xl mx-auto px-4">
           <div
@@ -1182,7 +1217,7 @@ Y</pre>
         }
 
         document.addEventListener('pointerover', (event) => {
-          const char = event.target.closest('.hover-char');
+          const char = event.target instanceof Element ? event.target.closest('.hover-char') : null;
           if (!char) return;
           if (terminalCursorRestoreTimer) {
             clearTimeout(terminalCursorRestoreTimer);
@@ -1191,10 +1226,18 @@ Y</pre>
           setTerminalCursorState(true);
         });
 
+        document.addEventListener('pointermove', (event) => {
+          if (!document.body.classList.contains('terminal-cursor-hidden')) return;
+          const hoveredChar = event.target instanceof Element ? event.target.closest('.hover-char') : null;
+          if (!hoveredChar) {
+            setTerminalCursorState(false);
+          }
+        });
+
         document.addEventListener('pointerout', (event) => {
-          const char = event.target.closest('.hover-char');
+          const char = event.target instanceof Element ? event.target.closest('.hover-char') : null;
           if (!char) return;
-          const next = event.relatedTarget && event.relatedTarget.closest
+          const next = event.relatedTarget && event.relatedTarget instanceof Element
             ? event.relatedTarget.closest('.hover-char')
             : null;
           if (next) return;
@@ -1209,7 +1252,9 @@ Y</pre>
         });
       })();
     </script>
+    <script src="./comments-widget.js" defer></script>
     <script src="./fire-loadscreen.js" defer></script>
     <script src="./ascii-bg.js" defer></script>
+    <script src="./fish-animation.js" defer></script>
   </body>
 </html>

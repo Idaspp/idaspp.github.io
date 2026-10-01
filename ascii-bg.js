@@ -117,6 +117,7 @@
       if(!node.nodeValue.trim().length) continue;
       if(!parent) continue;
       if(parent.closest('.hover-char')) continue;
+      if(parent.closest('#comments-widget')) continue;
       if(parent.closest('.menu-button')) continue;
       if(parent.closest('pre')) continue;
       if(parent.closest('script') || parent.closest('style')) continue;
