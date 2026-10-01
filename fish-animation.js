@@ -12,29 +12,45 @@
     '  ▄██_  _\n█████████▀\n ▀▀▀▀'
   ];
   const verticalOffsets = [8, -6, 13];
+  const renderedCells = new WeakMap();
   const fish = document.createElement('pre');
   fish.id = 'ascii-fish';
   fish.setAttribute('aria-hidden', 'true');
   const blackFish = document.createElement('pre');
   blackFish.id = 'ascii-fish-black';
   blackFish.setAttribute('aria-hidden', 'true');
-  function renderFrame(layer, frame, color){
-    layer.replaceChildren();
+  function renderFrame(layer, frame, color, frameSet){
     const lines = frame.split('\n');
+    let rows = renderedCells.get(layer);
+    if (!rows) {
+      const maxWidths = lines.map((_, lineIndex) => Math.max(
+        ...frameSet.map((candidate) => candidate.split('\n')[lineIndex]?.length || 0)
+      ));
+      rows = maxWidths.map((width, lineIndex) => {
+        const cells = [];
+        for (let column = 0; column < width; column += 1) {
+          const cell = document.createElement('span');
+          cell.style.display = 'inline-block';
+          cell.style.minWidth = '1ch';
+          cells.push(cell);
+          layer.appendChild(cell);
+        }
+        if (lineIndex < maxWidths.length - 1) layer.appendChild(document.createElement('br'));
+        return cells;
+      });
+      renderedCells.set(layer, rows);
+    }
+
     lines.forEach((line, lineIndex) => {
-      for(const character of line){
-        const cell = document.createElement('span');
-        cell.textContent = character;
-        if(character !== ' ') cell.style.color = color;
-        cell.style.display = 'inline-block';
-        cell.style.minWidth = '1ch';
-        layer.appendChild(cell);
-      }
-      if(lineIndex < lines.length - 1) layer.appendChild(document.createElement('br'));
+      rows[lineIndex].forEach((cell, column) => {
+        const character = line[column] || ' ';
+        if (cell.textContent !== character) cell.textContent = character;
+        cell.style.color = character === ' ' ? '' : color;
+      });
     });
   }
-  renderFrame(blackFish, blackFrames[0], '#000');
-  renderFrame(fish, frames[0], 'hsl(var(--foreground))');
+  renderFrame(blackFish, blackFrames[0], '#000', blackFrames);
+  renderFrame(fish, frames[0], 'hsl(var(--foreground))', frames);
   fish.style.cssText = `
     position: absolute;
     left: 0;
@@ -120,8 +136,8 @@
     if(elapsed - lastFrameTime >= 400){
       frameIndex += frameDirection;
       if(frameIndex === frames.length - 1 || frameIndex === 0) frameDirection *= -1;
-      renderFrame(blackFish, blackFrames[frameIndex], '#000');
-      renderFrame(fish, frames[frameIndex], 'hsl(var(--foreground))');
+      renderFrame(blackFish, blackFrames[frameIndex], '#000', blackFrames);
+      renderFrame(fish, frames[frameIndex], 'hsl(var(--foreground))', frames);
       lastFrameTime = elapsed;
     }
 
