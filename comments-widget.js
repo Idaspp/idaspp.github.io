@@ -7,7 +7,6 @@
   if (!root) return;
 
   const $ = (id) => document.getElementById(`comments-${id}`);
-  const toggle = $('toggle');
   const panel = $('panel');
   function wrapCommentHoverText(rootElement) {
     if (!rootElement) return;
@@ -38,7 +37,8 @@
       .forEach(wrapCommentHoverText);
   }
 
-  function setToggleText(label) {
+  function setToggleText(toggle, label) {
+    if (!toggle) return;
     const fragment = document.createDocumentFragment();
     fragment.appendChild(document.createTextNode('[ '));
 
@@ -58,14 +58,25 @@
     toggle.replaceChildren(fragment);
   }
 
-  toggle.addEventListener('click', () => {
+  document.addEventListener('click', (event) => {
+    const toggle = event.target instanceof Element ? event.target.closest('#comments-toggle') : null;
+    if (!toggle) return;
     const opening = panel.hidden;
     panel.hidden = !opening;
-    setToggleText(opening ? 'close comments' : 'show comments');
+    setToggleText(toggle, opening ? 'close comments' : 'show comments');
     toggle.setAttribute('aria-expanded', String(opening));
   });
 
-  setToggleText('show comments');
+  window.addEventListener('hashchange', () => {
+    const page = location.hash.slice(1) || 'main';
+    if (page === 'main') return;
+    panel.hidden = true;
+    setToggleText($('toggle'), 'show comments');
+    const toggle = $('toggle');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+  });
+
+  setToggleText($('toggle'), 'show comments');
   wrapCommentsText();
 
   if (!window.supabase) {
