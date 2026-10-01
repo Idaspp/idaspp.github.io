@@ -224,8 +224,9 @@
       header.className = 'comments-header';
       const author = document.createElement('strong');
       author.textContent = comment.author_name;
-      const time = document.createElement('span');
+      const time = document.createElement('time');
       time.className = 'comments-time';
+      time.setAttribute('datetime', comment.created_at);
       time.textContent = timeAgo(comment.created_at);
       header.append(author, time);
       const parent = comment.parent_id && byId.get(comment.parent_id);
@@ -373,6 +374,15 @@
   db.channel('main-page-comments-feed')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, () => load())
     .subscribe();
+
+  function updateTimeLabels() {
+    list.querySelectorAll('time.comments-time[datetime]').forEach((time) => {
+      time.textContent = timeAgo(time.getAttribute('datetime'));
+    });
+  }
+
+  setInterval(updateTimeLabels, 30000);
+  document.addEventListener('visibilitychange', updateTimeLabels);
 
   load();
 })();
