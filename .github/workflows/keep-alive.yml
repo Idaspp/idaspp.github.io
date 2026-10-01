@@ -13,4 +13,5 @@ jobs:
         run: |
           curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/keep_alive?select=*" \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Content-Profile: public" \
           -f || exit 1
