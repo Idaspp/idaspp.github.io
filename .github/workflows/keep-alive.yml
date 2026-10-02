@@ -1,0 +1,41 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-with-version: '20'
+
+      - name: Install Supabase Client
+        run: npm install @supabase/supabase-js
+
+      - name: Query Supabase using SDK
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          node -e "
+          const { createClient } = require('@supabase/supabase-js');
+          const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+          
+          async function run() {
+            const { data, error } = await supabase.from('keep_alive').select('*');
+            if (error) {
+              console.error('Database ping failed:', error.message);
+              process.exit(1);
+            }
+            console.log('Success! Connection verified.');
+          }
+          run();
+          "
