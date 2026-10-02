@@ -113,6 +113,10 @@
     if (url) {
       element.src = url;
       element.alt = name;
+      element.addEventListener('error', () => {
+        const fallback = avatar('', name);
+        element.replaceWith(fallback);
+      }, { once: true });
     } else {
       element.textContent = (name || '?').charAt(0).toUpperCase();
     }
@@ -288,6 +292,19 @@
       return;
     }
     comments = data || [];
+    render();
+    try {
+      const { data: avatarData, error: avatarError } = await db.functions.invoke('discord-avatars', {
+        body: { page: pageKey },
+      });
+      if (!avatarError && avatarData?.avatars) {
+        comments = comments.map((comment) => Object.prototype.hasOwnProperty.call(avatarData.avatars, comment.user_id)
+          ? { ...comment, avatar_url: avatarData.avatars[comment.user_id] }
+          : comment);
+      }
+    } catch (avatarError) {
+      console.warn('Could not refresh Discord avatars', avatarError);
+    }
     if (focusId) {
       const pageIndex = paginate().findIndex((items) => items.some((item) => item.comment.id === focusId));
       if (pageIndex >= 0) currentPage = pageIndex + 1;
