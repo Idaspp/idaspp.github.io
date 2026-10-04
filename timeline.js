@@ -36,13 +36,36 @@
     set('height', Math.floor(canvas.height * scale) + 'px');
   }
 
+  function isFullscreen() {
+    return Boolean(document.fullscreenElement || document.webkitFullscreenElement || active?.frame.classList.contains('is-faux-fullscreen'));
+  }
+
   function enterFullscreen(frame) {
+    const enableFallback = () => {
+      if (!active || active.frame !== frame) return;
+      frame.classList.add('is-faux-fullscreen');
+      document.body.classList.add('tl-faux-fullscreen');
+    };
     const request = frame.requestFullscreen || frame.webkitRequestFullscreen;
-    if (request) Promise.resolve(request.call(frame)).catch(() => {}); // unsupported (e.g. iPhone): game just plays in its box
+    if (!request) {
+      enableFallback();
+      return;
+    }
+    try {
+      Promise.resolve(request.call(frame)).catch(enableFallback);
+    } catch (_) {
+      // iOS Safari doesn't support fullscreen on arbitrary elements; use a viewport overlay instead.
+      enableFallback();
+    }
   }
 
   function exitFullscreen() {
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    if (active) active.frame.classList.remove('is-faux-fullscreen');
+    document.body.classList.remove('tl-faux-fullscreen');
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (exit) Promise.resolve(exit.call(document)).catch(() => {});
+    }
   }
 
   function focusGame() {
@@ -206,12 +229,16 @@
     if (event.target.closest('.tl-stop')) { stopGame(); return; }
     if (event.target.closest('.tl-exit')) { exitFullscreen(); return; }
     if (event.target.closest('.tl-fs') && active) {
-      if (document.fullscreenElement) exitFullscreen();
+      if (isFullscreen()) exitFullscreen();
       else enterFullscreen(active.frame);
     }
   });
 
   document.addEventListener('keydown', (event) => {
+    if (active && event.key === 'Escape' && active.frame.classList.contains('is-faux-fullscreen')) {
+      exitFullscreen();
+      return;
+    }
     if (active && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) event.preventDefault();
   }, { capture: true });
 
@@ -232,6 +259,7 @@
 
   // Fullscreen transitions can also move focus away from the game.
   document.addEventListener('fullscreenchange', focusGame);
+  document.addEventListener('webkitfullscreenchange', focusGame);
 
   // Leaving the page throws the game away; make sure the background is released.
   window.addEventListener('hashchange', stopGame);

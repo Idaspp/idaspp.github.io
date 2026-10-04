@@ -24,14 +24,19 @@
   cursor: pointer;
 }
 
-#comments-toggle .comments-toggle-label {
+.comments-toggle-label,
+a.inline-link,
+a.inline-link:visited {
   display: inline;
   color: #78aaff;
   text-decoration: underline;
   text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: color 120ms linear;
 }
 
-#comments-toggle .comments-toggle-label .hover-char {
+#comments-toggle .comments-toggle-label .hover-char,
+a.inline-link .hover-char {
   color: #78aaff;
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -43,7 +48,13 @@
 }
 
 #comments-toggle:hover .comments-toggle-label,
-#comments-toggle:hover .comments-toggle-label .hover-char { color: #b2d0ff; }
+#comments-toggle:hover .comments-toggle-label .hover-char,
+a.inline-link:hover,
+a.inline-link:focus-visible,
+a.inline-link:hover .hover-char,
+a.inline-link:focus-visible .hover-char { color: #b2d0ff; }
+
+.a.inline-link { display: none; }
 
 #comments-panel {
   padding: 0.8rem;

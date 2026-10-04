@@ -46,7 +46,22 @@
 }
 
 .tl-title { margin: 0 0 0.5rem; font-size: 1rem; letter-spacing: 0.04em; font-weight: normal; }
-.tl-desc { margin: 0; line-height: 1.35; }
+.tl-desc {
+  margin: 0;
+  line-height: 1.45;
+  font-size: 0.75rem;
+}
+.tl-desc a.inline-link,
+.tl-desc a.inline-link:visited {
+  color: #78aaff;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+.tl-desc a.inline-link:hover,
+.tl-desc a.inline-link:focus-visible {
+  color: #b2d0ff;
+}
 .tl-media img { display: block; max-width: 100%; border: 1px solid hsl(var(--foreground)); }
 .tl-video-list { display: grid; gap: 0.75rem; }
 
@@ -86,13 +101,13 @@
 
 .tl-pad { display: none; }
 @media (max-width: 700px), (pointer: coarse) {
-  .tl-frame.tl-game.is-playing:not(:fullscreen):not(:-webkit-full-screen) {
+  .tl-frame.tl-game.is-playing:not(:fullscreen):not(:-webkit-full-screen):not(.is-faux-fullscreen) {
     display: grid;
     grid-template-rows: auto auto;
     aspect-ratio: auto;
     height: auto;
   }
-  .tl-frame.tl-game.is-playing:not(:fullscreen):not(:-webkit-full-screen) iframe {
+  .tl-frame.tl-game.is-playing:not(:fullscreen):not(:-webkit-full-screen):not(.is-faux-fullscreen) iframe {
     position: relative;
     inset: auto;
     grid-row: 1;
@@ -180,3 +195,32 @@
 .tl-exit:hover { opacity: 1; background: #222; }
 .tl-frame:fullscreen .tl-exit { display: block; }
 .tl-frame:-webkit-full-screen .tl-exit { display: block; }
+
+/* Fallback fullscreen for mobile browsers that only support fullscreen on video. */
+body.tl-faux-fullscreen { overflow: hidden; }
+.tl-frame.is-faux-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  border: 0;
+  aspect-ratio: auto;
+}
+.tl-frame.is-faux-fullscreen iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.tl-frame.is-faux-fullscreen .tl-exit { display: block; }
+.tl-frame.is-faux-fullscreen .tl-pad {
+  position: absolute;
+  left: max(0.5rem, env(safe-area-inset-left));
+  bottom: max(0.5rem, env(safe-area-inset-bottom));
+  grid-row: auto;
+  margin: 0;
+}
