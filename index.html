@@ -62,6 +62,7 @@
     />
     <link rel="stylesheet" href="./ascii-bg.css" />
     <link rel="stylesheet" href="./comments-widget.css" />
+    <link rel="stylesheet" href="timeline.css">
     <style>
       :root {
         --background: 0 0% 0%;
@@ -698,6 +699,7 @@
   <script src="./cat-animation.js" defer></script>
   <script src="./media-player.js" defer></script>
   <script src="./cd-animation.js" defer></script>
+  <script src="timeline.js" defer></script>
   <script>
     function isMobileViewport() {
       const width = window.innerWidth;
@@ -888,9 +890,58 @@ Y</pre>
               <span class="text-foreground">: :</span>
           </div>
           <div class="border-b border-foreground text-center py-2 px-4 text-foreground">··Projects and Work··</div>
-          <div class="border-b border-foreground flex flex-col gap-2 px-3 py-4 text-foreground leading-relaxed">
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+          <div class="border-b border-foreground px-3 py-4 text-foreground">
+          <div class="timeline">
+
+            <!-- Newest: Deepwoken Sharko video. Replace the placeholder with the YouTube video ID. -->
+            <article class="tl-item tl-flow-item">
+              <div class="tl-media">
+                <h3 class="tl-title">Deepwoken Sharko</h3>
+                <div class="tl-frame">
+                  <iframe src="https://www.youtube-nocookie.com/embed/DEEPWOKEN_SHARKO_VIDEO_ID" title="Deepwoken Sharko video" loading="lazy"
+                          referrerpolicy="strict-origin-when-cross-origin"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowfullscreen></iframe>
+                </div>
+              </div>
+              <p class="tl-desc">The Deepwoken Sharko is Destroyman III from deepwoken as a desktop pet. He can talk to you, ask questions, shout at you if you're inactive, and has an epic bossfight where he attacks you with elements of the windows ui. This is a python application built on pyqt6.</p>
+            </article>
+
+            <!-- Isle System: add one video frame for each video; replace each placeholder ID. -->
+            <article class="tl-item tl-flow-item">
+              <div class="tl-media">
+                <h3 class="tl-title">Isle System</h3>
+                <div class="tl-video-list">
+                  <div class="tl-frame">
+                    <iframe src="https://www.youtube-nocookie.com/embed/3hJAnOs6d9s" title="Isle System video 1" loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                  </div>
+                  <div class="tl-frame">
+                    <iframe src="https://www.youtube-nocookie.com/embed/ISLE_SYSTEM_VIDEO_ID_2" title="Isle System video 2" loading="lazy"
+                          referrerpolicy="strict-origin-when-cross-origin"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowfullscreen></iframe>
+                  </div>
+                </div>
+              </div>
+              <p class="tl-desc">This giant system is a recreation of every single mechanic and weapon in the game Isle on Roblox, it also has more than half of all the items in the game. This system includes: Weight sytem, Warning/notification messages system, Ambience system, Sleeping system, Monster/Stan system, Days system, All guns, most utilities.</p>
+            </article>
+
+            <!-- Oldest: Love2D game (html export). Loads only when "play" is clicked. -->
+            <article class="tl-item tl-game-item">
+              <div class="tl-media">
+                <h3 class="tl-title">Cat of Ascii</h3>
+                <div class="tl-frame tl-game" data-game="./games/cat-of-ascii/game.html" data-title="Love2D Game" style="--ratio: 4 / 3">
+                  <button class="tl-play" type="button">[> Play</button>
+                </div>
+              </div>
+              <p class="tl-desc">Cat of Ascii was my first ever real game. I built it using lua paired with Love2D as a graphics engine. The version you can play here is a html5 port of the original. Love2D is only used to print the ascii art, so the collisions and everything else had to have their own engine written by me. I made this game at age 13.</p>
+            </article>
+
+          </div>
+        </div>
           </div>
       </template>
       </section>
