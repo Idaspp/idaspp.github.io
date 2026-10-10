@@ -332,17 +332,13 @@
     render();
   }
 
-authButton.addEventListener('click', async () => {
+  authButton.addEventListener('click', async () => {
     if (user) await db.auth.signOut();
     else await db.auth.signInWithOAuth({
-      provider: 'custom:discord',
-      options: { 
-        scopes: 'identify',
-        redirectTo: location.origin + location.pathname + location.search 
-      },
+      provider: 'discord',
+      options: { redirectTo: location.origin + location.pathname + location.search },
     });
   });
-
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
