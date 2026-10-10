@@ -1,6 +1,6 @@
 #comments-widget {
   width: min(680px, calc(100% - 2rem));
-  margin: 0.75rem auto 0.5rem;
+  margin: 0 auto;
   color: hsl(var(--foreground));
   font-family: var(--font-body);
   font-size: 0.8rem;
@@ -24,7 +24,6 @@
   cursor: pointer;
 }
 
-.comments-toggle-label,
 a.inline-link,
 a.inline-link:visited {
   display: inline;
@@ -32,6 +31,12 @@ a.inline-link:visited {
   text-decoration: underline;
   text-underline-offset: 0.18em;
   text-decoration-thickness: 1px;
+  transition: color 120ms linear;
+}
+
+.comments-toggle-label {
+  display: inline;
+  color: #78aaff;
   transition: color 120ms linear;
 }
 
@@ -215,7 +220,7 @@ a.inline-link:focus-visible .hover-char { color: #b2d0ff; }
 #comments-pager input { width: 2.2rem; padding: 0.1rem; text-align: center; }
 
 @media (max-width: 600px) {
-  #comments-widget { width: calc(100% - 1rem); margin-top: 1rem; }
+  #comments-widget { width: calc(100% - 1rem); }
   #comments-panel { padding: 0.6rem; }
   #comments-panel h2 { margin-right: -0.6rem; margin-left: -0.6rem; padding-right: 0.6rem; padding-left: 0.6rem; }
   #comments-auth-row { align-items: flex-start; }

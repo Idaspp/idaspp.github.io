@@ -67,15 +67,6 @@
     toggle.setAttribute('aria-expanded', String(opening));
   });
 
-  window.addEventListener('hashchange', () => {
-    const page = location.hash.slice(1) || 'main';
-    if (page === 'main') return;
-    panel.hidden = true;
-    setToggleText($('toggle'), 'show comments');
-    const toggle = $('toggle');
-    if (toggle) toggle.setAttribute('aria-expanded', 'false');
-  });
-
   setToggleText($('toggle'), 'show comments');
   wrapCommentsText();
 
@@ -341,13 +332,17 @@
     render();
   }
 
-  authButton.addEventListener('click', async () => {
+authButton.addEventListener('click', async () => {
     if (user) await db.auth.signOut();
     else await db.auth.signInWithOAuth({
       provider: 'discord',
-      options: { redirectTo: location.origin + location.pathname + location.search },
+      options: { 
+        scopes: 'identify',
+        redirectTo: location.origin + location.pathname + location.search 
+      },
     });
   });
+
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
