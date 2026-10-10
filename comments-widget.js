@@ -336,6 +336,7 @@
     if (user) await db.auth.signOut();
     else await db.auth.signInWithOAuth({
       provider: 'discord',
+      scopes: 'identify',
       options: { redirectTo: location.origin + location.pathname + location.search },
     });
   });
