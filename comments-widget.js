@@ -335,7 +335,7 @@
 authButton.addEventListener('click', async () => {
     if (user) await db.auth.signOut();
     else await db.auth.signInWithOAuth({
-      provider: 'discord',
+      provider: 'custom:discord',
       options: { 
         scopes: 'identify',
         redirectTo: location.origin + location.pathname + location.search 
